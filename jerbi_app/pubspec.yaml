@@ -71,10 +71,11 @@ flutter:
     - family: SFPro
       fonts:
         - asset: assets/fonts/SF-Pro-Text-Regular.otf
-        - asset: assets/fonts/SF-Pro-Text-Bold.otf
-          weight: 700
+          weight: 400
         - asset: assets/fonts/SF-Pro-Text-Semibold.otf
           weight: 600
+        - asset: assets/fonts/SF-Pro-Text-Bold.otf
+          weight: 700
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
