@@ -61,12 +61,35 @@ class _LoginPageState extends State<LoginPage> {
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
       
-      // For demo purposes - always show error
-      // In real app, this would be actual authentication logic
-      setState(() {
-        _isLoading = false;
-        _errorMessage = "Identifiant ou mot de passe invalide. Veuillez réessayer.";
-      });
+      // Check credentials
+      if (_emailController.text.trim() == 'admin' && _passwordController.text == '123456') {
+        // Successful login
+        setState(() {
+          _isLoading = false;
+          _errorMessage = null;
+        });
+        
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Connexion réussie!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+        
+        // TODO: Navigate to next screen
+        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardPage()));
+        
+      } else {
+        // Invalid credentials
+        setState(() {
+          _isLoading = false;
+          _errorMessage = "Identifiant ou mot de passe invalide. Veuillez réessayer.";
+        });
+      }
     } catch (e) {
       setState(() {
         _isLoading = false;
