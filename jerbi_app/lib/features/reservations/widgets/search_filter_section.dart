@@ -87,10 +87,17 @@ class _SearchFilterSectionState extends State<SearchFilterSection> {
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFF6C757D).withValues(alpha: 0.7),
                   ),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: Color(0xFF6C757D),
-                    size: 20,
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.only(left: 16, right: 12),
+                    child: Icon(
+                      Icons.search,
+                      color: Color(0xFF6C757D),
+                      size: 20,
+                    ),
+                  ),
+                  prefixIconConstraints: const BoxConstraints(
+                    minWidth: 48,
+                    minHeight: 48,
                   ),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
@@ -102,14 +109,18 @@ class _SearchFilterSectionState extends State<SearchFilterSection> {
                           onPressed: () {
                             _searchController.clear();
                             widget.onSearch('');
-                            setState(() {});
+                            if (mounted) {
+                              setState(() {});
+                            }
                           },
                         )
                       : null,
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
+                  contentPadding: const EdgeInsets.only(
+                    left: 0,
+                    right: 16,
+                    top: 14,
+                    bottom: 12,
                   ),
                 ),
               ),
