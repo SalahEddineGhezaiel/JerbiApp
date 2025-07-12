@@ -42,7 +42,7 @@ class ReservationsTable extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Client',
+                    'Réservations',
                     style: TextStyle(
                       fontFamily: 'SFPro',
                       fontSize: 14,

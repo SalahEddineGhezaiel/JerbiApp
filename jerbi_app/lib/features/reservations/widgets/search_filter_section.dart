@@ -80,7 +80,7 @@ class _SearchFilterSectionState extends State<SearchFilterSection> {
                   color: Color(0xFF212529),
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Rechercher par nom de client...',
+                  hintText: 'Rechercher',
                   hintStyle: TextStyle(
                     fontFamily: 'SFPro',
                     fontSize: 16,

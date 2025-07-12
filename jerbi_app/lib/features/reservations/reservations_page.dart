@@ -189,14 +189,12 @@ class _ReservationsPageState extends State<ReservationsPage> {
                 onViewDetails: _handleViewDetails,
               ),
             ),
-            
-            // Bottom Navigation
-            BottomNavigation(
-              selectedIndex: _selectedNavIndex,
-              onItemSelected: _handleNavigation,
-            ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigation(
+        selectedIndex: _selectedNavIndex,
+        onItemSelected: _handleNavigation,
       ),
     );
   }
