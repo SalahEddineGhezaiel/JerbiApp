@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../reservations/reservations_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -80,8 +81,13 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
         
-        // TODO: Navigate to next screen
-        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardPage()));
+        // Navigate to reservations page
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const ReservationsPage()),
+          );
+        }
         
       } else {
         // Invalid credentials
