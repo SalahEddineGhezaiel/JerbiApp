@@ -21,6 +21,16 @@ const createAdmin = async () => {
       email: 'admin@jerbi-events.com',
       password: '123456', // This will be hashed automatically
       role: 'super-admin',
+      permissions: {
+        canCreateAdmins: true,
+        canDeleteAdmins: true,
+        canViewReservations: true,
+        canCreateReservations: true,
+        canEditReservations: true,
+        canDeleteReservations: true,
+        canViewStatistics: true,
+        canManageSettings: true
+      },
       isActive: true
     };
 

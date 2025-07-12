@@ -96,6 +96,116 @@ Logout (client should remove token)
 Authorization: Bearer your_jwt_token_here
 ```
 
+### Admin Management
+
+#### GET /api/admin/profile
+Get current admin profile with permissions
+
+**Headers:**
+```
+Authorization: Bearer your_jwt_token_here
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Admin profile retrieved successfully",
+  "data": {
+    "admin": {
+      "id": "admin_id",
+      "username": "admin",
+      "email": "admin@jerbi-events.com",
+      "role": "super-admin",
+      "permissions": {
+        "canCreateAdmins": true,
+        "canDeleteAdmins": true,
+        "canViewReservations": true,
+        "canCreateReservations": true,
+        "canEditReservations": true,
+        "canDeleteReservations": true,
+        "canViewStatistics": true,
+        "canManageSettings": true
+      },
+      "isActive": true,
+      "lastLogin": "2024-01-01T00:00:00.000Z",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  }
+}
+```
+
+#### GET /api/admin/list
+Get all admins (requires canCreateAdmins permission or super-admin)
+
+**Headers:**
+```
+Authorization: Bearer your_jwt_token_here
+```
+
+#### POST /api/admin/create
+Create new admin (requires canCreateAdmins permission or super-admin)
+
+**Headers:**
+```
+Authorization: Bearer your_jwt_token_here
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "username": "staff1",
+  "email": "staff1@jerbi-events.com",
+  "password": "SecurePass123",
+  "permissions": {
+    "canCreateAdmins": false,
+    "canDeleteAdmins": false,
+    "canViewReservations": true,
+    "canCreateReservations": true,
+    "canEditReservations": true,
+    "canDeleteReservations": false,
+    "canViewStatistics": true,
+    "canManageSettings": false
+  }
+}
+```
+
+#### PUT /api/admin/:id/permissions
+Update admin permissions (requires canCreateAdmins permission or super-admin)
+
+**Headers:**
+```
+Authorization: Bearer your_jwt_token_here
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "permissions": {
+    "canCreateReservations": false,
+    "canEditReservations": false
+  }
+}
+```
+
+#### PUT /api/admin/:id/deactivate
+Deactivate admin (requires canDeleteAdmins permission or super-admin)
+
+**Headers:**
+```
+Authorization: Bearer your_jwt_token_here
+```
+
+#### PUT /api/admin/:id/activate
+Activate admin (requires canCreateAdmins permission or super-admin)
+
+**Headers:**
+```
+Authorization: Bearer your_jwt_token_here
+```
+
 ### Health Check
 
 #### GET /health

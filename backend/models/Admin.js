@@ -27,6 +27,45 @@ const adminSchema = new mongoose.Schema({
     default: 'admin',
     enum: ['admin', 'super-admin']
   },
+  permissions: {
+    canCreateAdmins: {
+      type: Boolean,
+      default: false
+    },
+    canDeleteAdmins: {
+      type: Boolean,
+      default: false
+    },
+    canViewReservations: {
+      type: Boolean,
+      default: true
+    },
+    canCreateReservations: {
+      type: Boolean,
+      default: true
+    },
+    canEditReservations: {
+      type: Boolean,
+      default: true
+    },
+    canDeleteReservations: {
+      type: Boolean,
+      default: false
+    },
+    canViewStatistics: {
+      type: Boolean,
+      default: true
+    },
+    canManageSettings: {
+      type: Boolean,
+      default: false
+    }
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Admin',
+    default: null
+  },
   isActive: {
     type: Boolean,
     default: true
