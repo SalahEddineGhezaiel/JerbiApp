@@ -1,20 +1,24 @@
 class Reservation {
   final String id;
-  final String clientName;
+  final String nomPrenom;
+  final String email;
+  final String telephone;
+  final int nombreAdultes;
+  final int nombreEnfants;
   final DateTime date;
   final String activity;
   final String? status;
-  final String? phoneNumber;
-  final String? email;
 
   Reservation({
     required this.id,
-    required this.clientName,
+    required this.nomPrenom,
+    required this.email,
+    required this.telephone,
+    required this.nombreAdultes,
+    required this.nombreEnfants,
     required this.date,
     required this.activity,
     this.status,
-    this.phoneNumber,
-    this.email,
   });
 
   // Format date for display
@@ -27,16 +31,32 @@ class Reservation {
     return '${formattedDate} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 
+  // Get total number of people
+  int get totalPersonnes => nombreAdultes + nombreEnfants;
+
+  // Get formatted people count
+  String get formattedPersonnes {
+    if (nombreEnfants == 0) {
+      return '$nombreAdultes adulte${nombreAdultes > 1 ? 's' : ''}';
+    } else if (nombreAdultes == 0) {
+      return '$nombreEnfants enfant${nombreEnfants > 1 ? 's' : ''}';
+    } else {
+      return '$nombreAdultes adulte${nombreAdultes > 1 ? 's' : ''}, $nombreEnfants enfant${nombreEnfants > 1 ? 's' : ''}';
+    }
+  }
+
   // Create from JSON (for future API integration)
   factory Reservation.fromJson(Map<String, dynamic> json) {
     return Reservation(
       id: json['id'] ?? '',
-      clientName: json['clientName'] ?? '',
+      nomPrenom: json['nomPrenom'] ?? '',
+      email: json['email'] ?? '',
+      telephone: json['telephone'] ?? '',
+      nombreAdultes: json['nombreAdultes'] ?? 0,
+      nombreEnfants: json['nombreEnfants'] ?? 0,
       date: DateTime.parse(json['date'] ?? DateTime.now().toIso8601String()),
       activity: json['activity'] ?? '',
       status: json['status'],
-      phoneNumber: json['phoneNumber'],
-      email: json['email'],
     );
   }
 
@@ -44,39 +64,45 @@ class Reservation {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'clientName': clientName,
+      'nomPrenom': nomPrenom,
+      'email': email,
+      'telephone': telephone,
+      'nombreAdultes': nombreAdultes,
+      'nombreEnfants': nombreEnfants,
       'date': date.toIso8601String(),
       'activity': activity,
       'status': status,
-      'phoneNumber': phoneNumber,
-      'email': email,
     };
   }
 
   // Copy with method for updates
   Reservation copyWith({
     String? id,
-    String? clientName,
+    String? nomPrenom,
+    String? email,
+    String? telephone,
+    int? nombreAdultes,
+    int? nombreEnfants,
     DateTime? date,
     String? activity,
     String? status,
-    String? phoneNumber,
-    String? email,
   }) {
     return Reservation(
       id: id ?? this.id,
-      clientName: clientName ?? this.clientName,
+      nomPrenom: nomPrenom ?? this.nomPrenom,
+      email: email ?? this.email,
+      telephone: telephone ?? this.telephone,
+      nombreAdultes: nombreAdultes ?? this.nombreAdultes,
+      nombreEnfants: nombreEnfants ?? this.nombreEnfants,
       date: date ?? this.date,
       activity: activity ?? this.activity,
       status: status ?? this.status,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
-      email: email ?? this.email,
     );
   }
 
   @override
   String toString() {
-    return 'Reservation(id: $id, clientName: $clientName, date: $date, activity: $activity)';
+    return 'Reservation(id: $id, nomPrenom: $nomPrenom, date: $date, activity: $activity)';
   }
 
   @override

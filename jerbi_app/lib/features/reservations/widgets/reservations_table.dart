@@ -43,11 +43,11 @@ class ReservationsTable extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Réservations',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'SFPro',
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF6C757D),
+                      color: Color(0xFF6C757D),
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -96,7 +96,7 @@ class ReservationsTable extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      reservation.clientName,
+                      reservation.nomPrenom,
                       style: const TextStyle(
                         fontFamily: 'SFPro',
                         fontSize: 16,
@@ -108,11 +108,11 @@ class ReservationsTable extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       reservation.activity,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'SFPro',
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: const Color(0xFF6C757D),
+                        color: Color(0xFF6C757D),
                         letterSpacing: 0.1,
                       ),
                     ),
@@ -152,23 +152,23 @@ class ReservationsTable extends StatelessWidget {
             color: const Color(0xFF6C757D).withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Aucune réservation trouvée',
             style: TextStyle(
               fontFamily: 'SFPro',
               fontSize: 18,
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF6C757D),
+              color: Color(0xFF6C757D),
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Les réservations apparaîtront ici',
             style: TextStyle(
               fontFamily: 'SFPro',
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: const Color(0xFF6C757D).withValues(alpha: 0.7),
+              color: Color(0xFF6C757D),
             ),
           ),
         ],
