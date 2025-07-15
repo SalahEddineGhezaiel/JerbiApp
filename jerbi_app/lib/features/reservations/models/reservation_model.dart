@@ -5,6 +5,7 @@ class Reservation {
   final String telephone;
   final int nombreAdultes;
   final int nombreEnfants;
+  final Map<String, int> enfantsParAge; // New field for children age ranges
   final DateTime date;
   final String activity;
   final String? status;
@@ -16,10 +17,18 @@ class Reservation {
     required this.telephone,
     required this.nombreAdultes,
     required this.nombreEnfants,
+    required this.enfantsParAge,
     required this.date,
     required this.activity,
     this.status,
   });
+
+  // Static age ranges
+  static const Map<String, String> ageRanges = {
+    'moins_4': 'Moins de 4 ans',
+    '4_8': 'De 4 à 8 ans',
+    '9_12': 'De 9 à 12 ans',
+  };
 
   // Format date for display
   String get formattedDate {
@@ -34,19 +43,58 @@ class Reservation {
   // Get total number of people
   int get totalPersonnes => nombreAdultes + nombreEnfants;
 
-  // Get formatted people count
+  // Get formatted people count with age details
   String get formattedPersonnes {
-    if (nombreEnfants == 0) {
-      return '$nombreAdultes adulte${nombreAdultes > 1 ? 's' : ''}';
-    } else if (nombreAdultes == 0) {
-      return '$nombreEnfants enfant${nombreEnfants > 1 ? 's' : ''}';
-    } else {
-      return '$nombreAdultes adulte${nombreAdultes > 1 ? 's' : ''}, $nombreEnfants enfant${nombreEnfants > 1 ? 's' : ''}';
+    List<String> parts = [];
+    
+    if (nombreAdultes > 0) {
+      parts.add('$nombreAdultes adulte${nombreAdultes > 1 ? 's' : ''}');
     }
+    
+    if (nombreEnfants > 0) {
+      List<String> enfantsParts = [];
+      enfantsParAge.forEach((ageKey, count) {
+        if (count > 0) {
+          String ageLabel = ageRanges[ageKey] ?? ageKey;
+          enfantsParts.add('$count enfant${count > 1 ? 's' : ''} ($ageLabel)');
+        }
+      });
+      
+      if (enfantsParts.isNotEmpty) {
+        parts.addAll(enfantsParts);
+      } else {
+        parts.add('$nombreEnfants enfant${nombreEnfants > 1 ? 's' : ''}');
+      }
+    }
+    
+    return parts.join(', ');
+  }
+
+  // Get formatted children details only
+  String get formattedEnfants {
+    if (nombreEnfants == 0) return 'Aucun enfant';
+    
+    List<String> enfantsParts = [];
+    enfantsParAge.forEach((ageKey, count) {
+      if (count > 0) {
+        String ageLabel = ageRanges[ageKey] ?? ageKey;
+        enfantsParts.add('$count × $ageLabel');
+      }
+    });
+    
+    return enfantsParts.isNotEmpty ? enfantsParts.join(', ') : '$nombreEnfants enfant${nombreEnfants > 1 ? 's' : ''}';
   }
 
   // Create from JSON (for future API integration)
   factory Reservation.fromJson(Map<String, dynamic> json) {
+    Map<String, int> enfantsParAge = {};
+    if (json['enfantsParAge'] != null) {
+      Map<String, dynamic> enfantsData = json['enfantsParAge'];
+      enfantsData.forEach((key, value) {
+        enfantsParAge[key] = value is int ? value : int.tryParse(value.toString()) ?? 0;
+      });
+    }
+
     return Reservation(
       id: json['id'] ?? '',
       nomPrenom: json['nomPrenom'] ?? '',
@@ -54,6 +102,7 @@ class Reservation {
       telephone: json['telephone'] ?? '',
       nombreAdultes: json['nombreAdultes'] ?? 0,
       nombreEnfants: json['nombreEnfants'] ?? 0,
+      enfantsParAge: enfantsParAge,
       date: DateTime.parse(json['date'] ?? DateTime.now().toIso8601String()),
       activity: json['activity'] ?? '',
       status: json['status'],
@@ -69,6 +118,7 @@ class Reservation {
       'telephone': telephone,
       'nombreAdultes': nombreAdultes,
       'nombreEnfants': nombreEnfants,
+      'enfantsParAge': enfantsParAge,
       'date': date.toIso8601String(),
       'activity': activity,
       'status': status,
@@ -83,6 +133,7 @@ class Reservation {
     String? telephone,
     int? nombreAdultes,
     int? nombreEnfants,
+    Map<String, int>? enfantsParAge,
     DateTime? date,
     String? activity,
     String? status,
@@ -94,6 +145,7 @@ class Reservation {
       telephone: telephone ?? this.telephone,
       nombreAdultes: nombreAdultes ?? this.nombreAdultes,
       nombreEnfants: nombreEnfants ?? this.nombreEnfants,
+      enfantsParAge: enfantsParAge ?? Map<String, int>.from(this.enfantsParAge),
       date: date ?? this.date,
       activity: activity ?? this.activity,
       status: status ?? this.status,
