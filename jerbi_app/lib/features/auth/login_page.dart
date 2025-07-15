@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../../shared/constants/constants.dart';
+import '../../shared/utils/utils.dart';
 import '../main/main_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -10,15 +12,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // Constants
-  static const double _logoWidth = 250.0;
-  static const double _logoHeight = 100.0;
-  static const double _formWidth = 370.0;
-  static const double _buttonHeight = 52.0;
-  static const double _borderRadius = 28.0;
-  static const String _backgroundImage = 'assets/bg1.png';
-  static const String _logoImage = 'assets/logo.png';
-  
   // Form and controllers
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
@@ -60,10 +53,11 @@ class _LoginPageState extends State<LoginPage> {
     
     try {
       // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(AppConstants.loginDelay);
       
       // Check credentials
-      if (_emailController.text.trim() == 'admin' && _passwordController.text == '123456') {
+      if (_emailController.text.trim() == AppConstants.defaultUsername && 
+          _passwordController.text == AppConstants.defaultPassword) {
         // Successful login
         setState(() {
           _isLoading = false;
@@ -73,10 +67,10 @@ class _LoginPageState extends State<LoginPage> {
         // Show success message
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Connexion réussie!'),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
+            SnackBar(
+              content: Text(AppStrings.loginSuccess),
+              backgroundColor: AppColors.success,
+              duration: AppConstants.shortSnackBarDuration,
             ),
           );
         }
@@ -93,24 +87,24 @@ class _LoginPageState extends State<LoginPage> {
         // Invalid credentials
         setState(() {
           _isLoading = false;
-          _errorMessage = "Identifiant ou mot de passe invalide. Veuillez réessayer.";
+          _errorMessage = AppStrings.loginErrorInvalid;
         });
       }
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = "Une erreur s'est produite. Veuillez réessayer.";
+        _errorMessage = AppStrings.loginErrorGeneral;
       });
     }
   }
 
   Widget _buildLogo() {
     return Container(
-      width: _logoWidth,
-      height: _logoHeight,
-      margin: const EdgeInsets.only(bottom: 32),
+      width: AppDimensions.logoWidth,
+      height: AppDimensions.logoHeight,
+      margin: EdgeInsets.only(bottom: AppDimensions.spaceXXXL),
       child: Image.asset(
-        _logoImage,
+        AppConstants.logoAsset,
         fit: BoxFit.contain,
       ),
     );
@@ -120,29 +114,16 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       children: [
         Text(
-          'Se Connecter',
+          AppStrings.loginTitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'SFPro',
-            fontWeight: FontWeight.w700,
-            fontSize: 28,
-            color: Colors.white,
-            letterSpacing: -0.5,
-            height: 1.2,
-            fontFeatures: const [FontFeature.enable('kern')],
-          ),
+          style: AppTextStyles.loginTitle,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: AppDimensions.spaceS),
         Text(
-          'Accès administrateur',
+          AppStrings.loginSubtitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'SFPro',
-            fontWeight: FontWeight.w400,
-            fontSize: 15,
-            color: Colors.white.withValues(alpha: 0.9),
-            height: 1.3,
-            fontFeatures: const [FontFeature.enable('kern')],
+          style: AppTextStyles.loginSubtitle.copyWith(
+            color: AppColors.whiteWithOpacity(0.9),
           ),
         ),
       ],
@@ -151,33 +132,27 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildLoginButton() {
     return SizedBox(
-      height: _buttonHeight,
+      height: AppDimensions.buttonHeightL,
       child: ElevatedButton(
         onPressed: _isLoading ? null : _handleLogin,
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          backgroundColor: Colors.white.withValues(alpha: 0.18),
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.whiteWithOpacity(0.18),
+          foregroundColor: AppColors.textOnPrimary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          textStyle: const TextStyle(
-            fontFamily: 'SFPro',
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            letterSpacing: 0.2,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusL),
           ),
         ),
         child: _isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
+            ? SizedBox(
+                width: AppDimensions.iconSize,
+                height: AppDimensions.iconSize,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.textOnPrimary),
                 ),
               )
-            : const Text('Se Connecter'),
+            : Text(AppStrings.loginButton, style: AppTextStyles.buttonLarge),
       ),
     );
   }
@@ -186,30 +161,26 @@ class _LoginPageState extends State<LoginPage> {
     if (_errorMessage == null) return const SizedBox.shrink();
     
     return Container(
-      margin: const EdgeInsets.only(top: 18),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(top: AppDimensions.spaceL + 2),
+      padding: EdgeInsets.all(AppDimensions.paddingM),
       decoration: BoxDecoration(
-        color: Colors.red[50],
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.red[200]!),
+        color: AppColors.error.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Icon(
             Icons.error_outline,
-            color: Colors.red[600],
-            size: 20,
+            color: AppColors.error,
+            size: AppDimensions.iconSizeS,
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: AppDimensions.spaceS),
           Expanded(
             child: Text(
               _errorMessage!,
-              style: const TextStyle(
-                color: Color(0xFFD32F2F),
-                fontSize: 14,
-                fontFamily: 'SFPro',
-                fontWeight: FontWeight.w400,
-                height: 1.4,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.error,
               ),
             ),
           ),
@@ -220,23 +191,26 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildForm() {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(_borderRadius),
+      borderRadius: BorderRadius.circular(AppDimensions.radiusXXXL),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
-          width: _formWidth,
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 36),
+          width: AppDimensions.formWidth,
+          padding: EdgeInsets.symmetric(
+            horizontal: AppDimensions.paddingXXXL, 
+            vertical: AppDimensions.paddingForm
+          ),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(_borderRadius),
+            color: AppColors.whiteWithOpacity(0.15),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusXXXL),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.18),
-              width: 1.2,
+              color: AppColors.whiteWithOpacity(0.18),
+              width: AppDimensions.borderWidthMedium,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.10),
-                blurRadius: 24,
+                color: AppColors.blackWithOpacity(0.10),
+                blurRadius: AppDimensions.spaceXXL,
                 offset: const Offset(0, 8),
               ),
             ],
@@ -247,19 +221,19 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildFormHeader(),
-                const SizedBox(height: 32),
+                SizedBox(height: AppDimensions.spaceXXXL),
                 _GlassTextField(
                   controller: _emailController,
-                  hintText: 'Identifiant',
+                  hintText: AppStrings.usernameHint,
                   icon: Icons.person_outline,
                   keyboardType: TextInputType.emailAddress,
                   obscureText: false,
                   autofillHints: const [AutofillHints.username, AutofillHints.email],
                 ),
-                const SizedBox(height: 18),
+                SizedBox(height: AppDimensions.spaceL + 2),
                 _GlassTextField(
                   controller: _passwordController,
-                  hintText: 'Mot De Passe',
+                  hintText: AppStrings.passwordHint,
                   icon: Icons.lock_outline,
                   obscureText: !_isPasswordVisible,
                   keyboardType: TextInputType.visiblePassword,
@@ -267,12 +241,12 @@ class _LoginPageState extends State<LoginPage> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       _isPasswordVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                      color: Colors.white,
+                      color: AppColors.textOnPrimary,
                     ),
                     onPressed: _togglePasswordVisibility,
                   ),
                 ),
-                const SizedBox(height: 28),
+                SizedBox(height: AppDimensions.spaceXXL + 4),
                 _buildLoginButton(),
                 _buildErrorMessage(),
               ],
@@ -293,13 +267,13 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Positioned.fill(
               child: Image.asset(
-                _backgroundImage,
+                AppConstants.backgroundAsset,
                 fit: BoxFit.cover,
               ),
             ),
             Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(AppDimensions.paddingL),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -342,49 +316,51 @@ class _GlassTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       autofillHints: autofillHints,
-      style: const TextStyle(
-        fontFamily: 'SFPro',
+      style: AppTextStyles.inputText.copyWith(
+        color: AppColors.textOnPrimary,
         fontWeight: FontWeight.w500,
-        fontSize: 16,
-        color: Colors.white,
-        height: 1.4,
-        letterSpacing: 0.1,
       ),
-      cursorColor: Colors.white,
+      cursorColor: AppColors.textOnPrimary,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.08),
+        fillColor: AppColors.whiteWithOpacity(0.08),
         hintText: hintText,
-        hintStyle: TextStyle(
-          fontFamily: 'SFPro',
-          color: Colors.white.withValues(alpha: 0.7),
-          fontWeight: FontWeight.w400,
-          fontSize: 16,
-          height: 1.4,
-          letterSpacing: 0.1,
+        hintStyle: AppTextStyles.inputHint.copyWith(
+          color: AppColors.whiteWithOpacity(0.7),
         ),
-        prefixIcon: Icon(icon, color: Colors.white),
+        prefixIcon: Icon(icon, color: AppColors.textOnPrimary),
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.18), width: 1.2),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusM + 2),
+          borderSide: BorderSide(
+            color: AppColors.whiteWithOpacity(0.18), 
+            width: AppDimensions.borderWidthMedium
+          ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.18), width: 1.2),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusM + 2),
+          borderSide: BorderSide(
+            color: AppColors.whiteWithOpacity(0.18), 
+            width: AppDimensions.borderWidthMedium
+          ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Colors.white, width: 2),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusM + 2),
+          borderSide: BorderSide(
+            color: AppColors.textOnPrimary, 
+            width: AppDimensions.borderWidthThick
+          ),
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
+        contentPadding: EdgeInsets.symmetric(
+          vertical: AppDimensions.paddingXL, 
+          horizontal: AppDimensions.spaceL + 2
+        ),
       ),
       validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Veuillez saisir votre ${hintText.toLowerCase()}';
-        }
-        if (hintText == 'Mot De Passe' && value.length < 6) {
-          return 'Le mot de passe doit contenir au moins 6 caractères';
+        if (hintText == AppStrings.usernameHint) {
+          return Validators.validateRequired(value, AppStrings.usernameRequired);
+        } else if (hintText == AppStrings.passwordHint) {
+          return Validators.validatePassword(value);
         }
         return null;
       },

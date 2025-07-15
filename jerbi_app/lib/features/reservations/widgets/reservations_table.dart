@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../shared/constants/constants.dart';
 import '../models/reservation_model.dart';
 
 class ReservationsTable extends StatelessWidget {
@@ -14,14 +15,14 @@ class ReservationsTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.symmetric(horizontal: AppDimensions.marginXL),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
+            color: AppColors.blackWithOpacity(0.05),
+            blurRadius: AppDimensions.elevationL,
             offset: const Offset(0, 4),
           ),
         ],
@@ -30,29 +31,26 @@ class ReservationsTable extends StatelessWidget {
         children: [
           // Table Header
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: const BoxDecoration(
-              color: Color(0xFFF8F9FA),
+            padding: EdgeInsets.symmetric(
+              horizontal: AppDimensions.paddingXL, 
+              vertical: AppDimensions.paddingL
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.background,
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
+                topLeft: Radius.circular(AppDimensions.radiusL),
+                topRight: Radius.circular(AppDimensions.radiusL),
               ),
             ),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
-                    'Réservations',
-                    style: const TextStyle(
-                      fontFamily: 'SFPro',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF6C757D),
-                      letterSpacing: 0.5,
-                    ),
+                    AppStrings.reservationsTitle,
+                    style: AppTextStyles.labelMedium.copyWith(color: AppColors.secondary),
                   ),
                 ),
-                const SizedBox(width: 48), // Space for eye icon
+                SizedBox(width: AppDimensions.iconButtonSize), // Space for eye icon
               ],
             ),
           ),
@@ -64,11 +62,11 @@ class ReservationsTable extends StatelessWidget {
                 : ListView.separated(
                     padding: EdgeInsets.zero,
                     itemCount: reservations.length,
-                    separatorBuilder: (context, index) => const Divider(
-                      height: 1,
-                      color: Color(0xFFE9ECEF),
-                      indent: 20,
-                      endIndent: 20,
+                    separatorBuilder: (context, index) => Divider(
+                      height: AppDimensions.borderWidthThin,
+                      color: AppColors.border,
+                      indent: AppDimensions.paddingXL,
+                      endIndent: AppDimensions.paddingXL,
                     ),
                     itemBuilder: (context, index) {
                       final reservation = reservations[index];
@@ -87,34 +85,34 @@ class ReservationsTable extends StatelessWidget {
       child: InkWell(
         onTap: () => onViewDetails(reservation),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: EdgeInsets.symmetric(
+            horizontal: AppDimensions.paddingXL, 
+            vertical: AppDimensions.paddingL
+          ),
           child: Row(
             children: [
-              // Client Name
+              // Client Information
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Client Name
                     Text(
                       reservation.nomPrenom,
-                      style: const TextStyle(
-                        fontFamily: 'SFPro',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF212529),
-                        letterSpacing: 0.1,
-                      ),
+                      style: AppTextStyles.h6.copyWith(color: AppColors.textPrimary),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: AppDimensions.spaceXS),
+                    // Phone Number
+                    Text(
+                      reservation.telephone,
+                      style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                    ),
+                    SizedBox(height: AppDimensions.spaceXS / 2),
+                    // Activity
                     Text(
                       reservation.activity,
-                      style: const TextStyle(
-                        fontFamily: 'SFPro',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF6C757D),
-                        letterSpacing: 0.1,
-                      ),
+                      style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -122,16 +120,16 @@ class ReservationsTable extends StatelessWidget {
               
               // Eye Icon
               Container(
-                width: 40,
-                height: 40,
+                width: AppDimensions.iconButtonSizeS,
+                height: AppDimensions.iconButtonSizeS,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF061138).withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(10),
+                  color: AppColors.primaryWithOpacity(0.08),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusS),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.visibility_outlined,
-                  color: Color(0xFF061138),
-                  size: 18,
+                  color: AppColors.primary,
+                  size: AppDimensions.iconSizeXS,
                 ),
               ),
             ],
@@ -149,27 +147,17 @@ class ReservationsTable extends StatelessWidget {
           Icon(
             Icons.event_note_outlined,
             size: 64,
-            color: const Color(0xFF6C757D).withValues(alpha: 0.5),
+            color: AppColors.secondaryWithOpacity(0.5),
           ),
-          const SizedBox(height: 16),
-          const Text(
-            'Aucune réservation trouvée',
-            style: TextStyle(
-              fontFamily: 'SFPro',
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF6C757D),
-            ),
+          SizedBox(height: AppDimensions.spaceL),
+          Text(
+            AppStrings.reservationsEmpty,
+            style: AppTextStyles.h5.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 8),
-          const Text(
-            'Les réservations apparaîtront ici',
-            style: TextStyle(
-              fontFamily: 'SFPro',
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF6C757D),
-            ),
+          SizedBox(height: AppDimensions.spaceS),
+          Text(
+            AppStrings.reservationsEmptySubtitle,
+            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),

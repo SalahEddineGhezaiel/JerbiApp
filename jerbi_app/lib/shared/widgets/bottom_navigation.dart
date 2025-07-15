@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/constants.dart';
 
 class BottomNavigation extends StatelessWidget {
   final int selectedIndex;
@@ -14,11 +15,11 @@ class BottomNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 12,
+            color: AppColors.blackWithOpacity(0.08),
+            blurRadius: AppDimensions.elevationXL,
             offset: const Offset(0, -4),
           ),
         ],
@@ -26,7 +27,10 @@ class BottomNavigation extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          padding: EdgeInsets.symmetric(
+            horizontal: AppDimensions.paddingXL, 
+            vertical: AppDimensions.paddingS
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -34,19 +38,19 @@ class BottomNavigation extends StatelessWidget {
                 index: 0,
                 icon: Icons.event_note_outlined,
                 activeIcon: Icons.event_note,
-                label: 'Réservations',
+                label: AppStrings.navReservations,
               ),
               _buildNavItem(
                 index: 1,
                 icon: Icons.bar_chart_outlined,
                 activeIcon: Icons.bar_chart,
-                label: 'Statistiques',
+                label: AppStrings.navStatistics,
               ),
               _buildNavItem(
                 index: 2,
                 icon: Icons.settings_outlined,
                 activeIcon: Icons.settings,
-                label: 'Paramètres',
+                label: AppStrings.navSettings,
               ),
             ],
           ),
@@ -68,45 +72,39 @@ class BottomNavigation extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => onItemSelected(index),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusM),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: EdgeInsets.symmetric(vertical: AppDimensions.paddingS),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Icon
                 Container(
-                  width: 32,
-                  height: 32,
+                  width: AppDimensions.navIconContainer,
+                  height: AppDimensions.navIconContainer,
                   decoration: BoxDecoration(
                     color: isSelected 
-                        ? const Color(0xFF061138).withValues(alpha: 0.1)
+                        ? AppColors.primaryWithOpacity(0.1)
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusS),
                   ),
                   child: Icon(
                     isSelected ? activeIcon : icon,
                     color: isSelected 
-                        ? const Color(0xFF061138)
-                        : const Color(0xFF6C757D),
-                    size: 20,
+                        ? AppColors.primary
+                        : AppColors.secondary,
+                    size: AppDimensions.iconSizeS,
                   ),
                 ),
                 
-                const SizedBox(height: 4),
+                SizedBox(height: AppDimensions.spaceXS),
                 
                 // Label
                 Text(
                   label,
-                  style: TextStyle(
-                    fontFamily: 'SFPro',
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: isSelected 
-                        ? const Color(0xFF061138)
-                        : const Color(0xFF6C757D),
-                    letterSpacing: 0.1,
-                  ),
+                  style: isSelected 
+                      ? AppTextStyles.navLabelSelected.copyWith(color: AppColors.primary)
+                      : AppTextStyles.navLabel.copyWith(color: AppColors.secondary),
                 ),
               ],
             ),

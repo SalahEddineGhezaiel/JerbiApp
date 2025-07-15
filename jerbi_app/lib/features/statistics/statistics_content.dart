@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../shared/constants/constants.dart';
+import '../../shared/widgets/page_header.dart';
 
 class StatisticsContent extends StatefulWidget {
   const StatisticsContent({super.key});
@@ -8,7 +10,7 @@ class StatisticsContent extends StatefulWidget {
 }
 
 class _StatisticsContentState extends State<StatisticsContent> {
-  String _selectedPeriod = 'Cette semaine';
+  String _selectedPeriod = AppStrings.thisWeek;
   
   // Mock data - will be replaced with API calls later
   final Map<String, dynamic> _mockStats = {
@@ -20,72 +22,35 @@ class _StatisticsContentState extends State<StatisticsContent> {
     'totalCustomers': 89,
   };
 
-  final List<String> _periods = [
-    'Aujourd\'hui',
-    'Cette semaine', 
-    'Ce mois',
-    'Cette année'
-  ];
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
         children: [
-          _buildHeader(),
+          PageHeader(title: AppStrings.statisticsTitle),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+              padding: EdgeInsets.fromLTRB(
+                AppDimensions.paddingL, 
+                AppDimensions.paddingM, 
+                AppDimensions.paddingL, 
+                AppDimensions.paddingXXXL
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildPeriodSelector(),
-                  const SizedBox(height: 12),
+                  SizedBox(height: AppDimensions.spaceM),
                   _buildStatsCards(),
-                  const SizedBox(height: 16),
+                  SizedBox(height: AppDimensions.spaceL),
                   _buildChartsSection(),
-                  const SizedBox(height: 16),
+                  SizedBox(height: AppDimensions.spaceL),
                   _buildActivityBreakdown(),
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppDimensions.spaceXXL),
                 ],
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-      decoration: const BoxDecoration(
-        color: Color(0xFF061138),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
-        ),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.analytics_outlined,
-            color: Colors.white,
-            size: 28,
-          ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Text(
-              'Statistiques',
-              style: TextStyle(
-                fontFamily: 'SFPro',
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          // Removed the back arrow button
         ],
       ),
     );
@@ -96,13 +61,13 @@ class _StatisticsContentState extends State<StatisticsContent> {
       height: 45,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: _periods.length,
+        itemCount: AppConstants.timePeriods.length,
         itemBuilder: (context, index) {
-          final period = _periods[index];
+          final period = AppConstants.timePeriods[index];
           final isSelected = period == _selectedPeriod;
           
           return Padding(
-            padding: const EdgeInsets.only(right: 12),
+            padding: EdgeInsets.only(right: AppDimensions.spaceM),
             child: GestureDetector(
               onTap: () {
                 setState(() {
@@ -110,21 +75,22 @@ class _StatisticsContentState extends State<StatisticsContent> {
                 });
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL + 2, 
+                  vertical: AppDimensions.paddingS + 2
+                ),
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF061138) : Colors.white,
-                  borderRadius: BorderRadius.circular(25),
+                  color: isSelected ? AppColors.primary : AppColors.surface,
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusCircular / 2),
                   border: Border.all(
-                    color: isSelected ? const Color(0xFF061138) : const Color(0xFFE9ECEF),
+                    color: isSelected ? AppColors.primary : AppColors.border,
                   ),
                 ),
                 child: Text(
                   period,
-                  style: TextStyle(
-                    fontFamily: 'SFPro',
-                    fontSize: 13,
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
                     fontWeight: FontWeight.w600,
-                    color: isSelected ? Colors.white : const Color(0xFF6C757D),
                   ),
                 ),
               ),
@@ -140,33 +106,33 @@ class _StatisticsContentState extends State<StatisticsContent> {
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
-      childAspectRatio: 1.9,
+      crossAxisSpacing: AppDimensions.spaceM,
+      mainAxisSpacing: AppDimensions.spaceM,
+      childAspectRatio: AppDimensions.statCardAspectRatio,
       children: [
         _buildStatCard(
-          'Total Réservations',
+          AppStrings.totalReservations,
           '${_mockStats['totalReservations']}',
           Icons.event_note,
-          const Color(0xFF4CAF50),
+          AppColors.chartGreen,
         ),
         _buildStatCard(
-          'Confirmées',
+          AppStrings.confirmedReservations,
           '${_mockStats['confirmedReservations']}',
           Icons.check_circle,
-          const Color(0xFF2196F3),
+          AppColors.chartBlue,
         ),
         _buildStatCard(
-          'En Attente',
+          AppStrings.pendingReservations,
           '${_mockStats['pendingReservations']}',
           Icons.schedule,
-          const Color(0xFFFF9800),
+          AppColors.chartOrange,
         ),
         _buildStatCard(
-          'Annulées',
+          AppStrings.cancelledReservations,
           '${_mockStats['cancelledReservations']}',
           Icons.cancel,
-          const Color(0xFFF44336),
+          AppColors.chartRed,
         ),
       ],
     );
@@ -174,14 +140,14 @@ class _StatisticsContentState extends State<StatisticsContent> {
 
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(AppDimensions.paddingM),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: AppColors.blackWithOpacity(0.05),
+            blurRadius: AppDimensions.elevationL,
             offset: const Offset(0, 2),
           ),
         ],
@@ -192,35 +158,25 @@ class _StatisticsContentState extends State<StatisticsContent> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(6),
+                padding: EdgeInsets.all(AppDimensions.paddingXS + 2),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusS),
                 ),
-                child: Icon(icon, color: color, size: 18),
+                child: Icon(icon, color: color, size: AppDimensions.iconSizeXS),
               ),
               const Spacer(),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: AppDimensions.spaceS),
           Text(
             value,
-            style: const TextStyle(
-              fontFamily: 'SFPro',
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF061138),
-            ),
+            style: AppTextStyles.h4.copyWith(color: AppColors.primary),
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: AppDimensions.spaceXS),
           Text(
             title,
-            style: const TextStyle(
-              fontFamily: 'SFPro',
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF6C757D),
-            ),
+            style: AppTextStyles.labelSmall.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -229,14 +185,14 @@ class _StatisticsContentState extends State<StatisticsContent> {
 
   Widget _buildChartsSection() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppDimensions.paddingL),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: AppColors.blackWithOpacity(0.05),
+            blurRadius: AppDimensions.elevationL,
             offset: const Offset(0, 2),
           ),
         ],
@@ -244,40 +200,30 @@ class _StatisticsContentState extends State<StatisticsContent> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Évolution des Réservations',
-            style: TextStyle(
-              fontFamily: 'SFPro',
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF061138),
-            ),
+          Text(
+            AppStrings.reservationEvolution,
+            style: AppTextStyles.h6.copyWith(color: AppColors.primary),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: AppDimensions.spaceM),
           Container(
-            height: 160,
+            height: AppDimensions.chartHeight,
             decoration: BoxDecoration(
-              color: const Color(0xFFF8F9FA),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
             ),
-            child: const Center(
+            child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.show_chart,
-                    size: 36,
-                    color: Color(0xFF6C757D),
+                    size: AppDimensions.iconSize + 12,
+                    color: AppColors.textSecondary,
                   ),
-                  SizedBox(height: 6),
+                  SizedBox(height: AppDimensions.paddingXS + 2),
                   Text(
-                    'Graphique à implémenter',
-                    style: TextStyle(
-                      fontFamily: 'SFPro',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF6C757D),
-                    ),
+                    AppStrings.chartPlaceholder,
+                    style: AppTextStyles.labelMedium.copyWith(color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -290,22 +236,22 @@ class _StatisticsContentState extends State<StatisticsContent> {
 
   Widget _buildActivityBreakdown() {
     final activities = [
-      {'name': 'Balade en mer avec kayak', 'count': 45, 'color': const Color(0xFF4CAF50)},
-      {'name': 'Sortie bateau à Haouaria', 'count': 32, 'color': const Color(0xFF2196F3)},
-      {'name': 'Plongée sous marine', 'count': 28, 'color': const Color(0xFFFF9800)},
-      {'name': 'Camping', 'count': 25, 'color': const Color(0xFF9C27B0)},
-      {'name': 'Journée crique', 'count': 18, 'color': const Color(0xFFF44336)},
+      {'name': AppStrings.activityKayak, 'count': 45, 'color': AppColors.chartGreen},
+      {'name': AppStrings.activityBoatHaouaria, 'count': 32, 'color': AppColors.chartBlue},
+      {'name': AppStrings.activityDiving, 'count': 28, 'color': AppColors.chartOrange},
+      {'name': AppStrings.activityCamping, 'count': 25, 'color': AppColors.chartPurple},
+      {'name': AppStrings.activityCrique, 'count': 18, 'color': AppColors.chartRed},
     ];
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppDimensions.paddingL),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: AppColors.blackWithOpacity(0.05),
+            blurRadius: AppDimensions.elevationL,
             offset: const Offset(0, 2),
           ),
         ],
@@ -313,47 +259,35 @@ class _StatisticsContentState extends State<StatisticsContent> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Répartition par Activité',
-            style: TextStyle(
-              fontFamily: 'SFPro',
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF061138),
-            ),
+          Text(
+            AppStrings.activityBreakdown,
+            style: AppTextStyles.h6.copyWith(color: AppColors.primary),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: AppDimensions.spaceM),
           ...activities.map((activity) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: EdgeInsets.only(bottom: AppDimensions.spaceS + 2),
             child: Row(
               children: [
                 Container(
-                  width: 10,
-                  height: 10,
+                  width: AppDimensions.chartIndicatorSize,
+                  height: AppDimensions.chartIndicatorSize,
                   decoration: BoxDecoration(
                     color: activity['color'] as Color,
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(AppDimensions.chartIndicatorSize / 2),
                   ),
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: AppDimensions.spaceS + 2),
                 Expanded(
                   child: Text(
                     activity['name'] as String,
-                    style: const TextStyle(
-                      fontFamily: 'SFPro',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF212529),
-                    ),
+                    style: AppTextStyles.labelMedium.copyWith(color: AppColors.textPrimary),
                   ),
                 ),
                 Text(
                   '${activity['count']}',
-                  style: const TextStyle(
-                    fontFamily: 'SFPro',
-                    fontSize: 13,
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: AppColors.primary,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF061138),
                   ),
                 ),
               ],

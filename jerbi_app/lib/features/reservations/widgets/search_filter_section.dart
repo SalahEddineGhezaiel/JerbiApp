@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../shared/constants/constants.dart';
 
 class SearchFilterSection extends StatefulWidget {
   final Function(String) onSearch;
@@ -28,29 +29,31 @@ class _SearchFilterSectionState extends State<SearchFilterSection> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      color: Colors.white,
+      padding: EdgeInsets.all(AppDimensions.paddingXL),
+      color: AppColors.surface,
       child: Row(
         children: [
           // Filter Button
           Material(
             color: widget.hasActiveFilters 
-                ? const Color(0xFF061138).withValues(alpha: 0.1)
-                : const Color(0xFFF8F9FA),
-            borderRadius: BorderRadius.circular(12),
+                ? AppColors.primaryWithOpacity(0.1)
+                : AppColors.background,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusM),
             child: InkWell(
               onTap: widget.onFilter,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
               child: Container(
-                width: 48,
-                height: 48,
+                width: AppDimensions.iconButtonSize,
+                height: AppDimensions.iconButtonSize,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                   border: Border.all(
                     color: widget.hasActiveFilters 
-                        ? const Color(0xFF061138)
-                        : const Color(0xFFE9ECEF),
-                    width: widget.hasActiveFilters ? 2 : 1,
+                        ? AppColors.primary
+                        : AppColors.border,
+                    width: widget.hasActiveFilters 
+                        ? AppDimensions.borderWidthThick 
+                        : AppDimensions.borderWidthThin,
                   ),
                 ),
                 child: Stack(
@@ -59,20 +62,20 @@ class _SearchFilterSectionState extends State<SearchFilterSection> {
                       child: Icon(
                         Icons.filter_list,
                         color: widget.hasActiveFilters 
-                            ? const Color(0xFF061138)
-                            : const Color(0xFF6C757D),
-                        size: 20,
+                            ? AppColors.primary
+                            : AppColors.secondary,
+                        size: AppDimensions.iconSizeS,
                       ),
                     ),
                     if (widget.hasActiveFilters)
                       Positioned(
-                        top: 8,
-                        right: 8,
+                        top: AppDimensions.spaceS,
+                        right: AppDimensions.spaceS,
                         child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF061138),
+                          width: AppDimensions.spaceS,
+                          height: AppDimensions.spaceS,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -83,55 +86,50 @@ class _SearchFilterSectionState extends State<SearchFilterSection> {
             ),
           ),
           
-          const SizedBox(width: 12),
+          SizedBox(width: AppDimensions.spaceM),
           
           // Search Bar
           Expanded(
             child: Container(
-              height: 48,
+              height: AppDimensions.inputHeight,
               decoration: BoxDecoration(
-                color: const Color(0xFFF8F9FA),
-                borderRadius: BorderRadius.circular(12),
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                 border: Border.all(
-                  color: const Color(0xFFE9ECEF),
-                  width: 1,
+                  color: AppColors.border,
+                  width: AppDimensions.borderWidthThin,
                 ),
               ),
               child: TextField(
                 controller: _searchController,
                 onChanged: widget.onSearch,
-                style: const TextStyle(
-                  fontFamily: 'SFPro',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF212529),
-                ),
+                style: AppTextStyles.inputText,
                 decoration: InputDecoration(
-                  hintText: 'Rechercher',
-                  hintStyle: TextStyle(
-                    fontFamily: 'SFPro',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFF6C757D).withValues(alpha: 0.7),
+                  hintText: AppStrings.searchHint,
+                  hintStyle: AppTextStyles.inputHint.copyWith(
+                    color: AppColors.secondaryWithOpacity(0.7),
                   ),
-                  prefixIcon: const Padding(
-                    padding: EdgeInsets.only(left: 16, right: 12),
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.only(
+                      left: AppDimensions.paddingL, 
+                      right: AppDimensions.paddingM
+                    ),
                     child: Icon(
                       Icons.search,
-                      color: Color(0xFF6C757D),
-                      size: 20,
+                      color: AppColors.secondary,
+                      size: AppDimensions.iconSizeS,
                     ),
                   ),
-                  prefixIconConstraints: const BoxConstraints(
-                    minWidth: 48,
-                    minHeight: 48,
+                  prefixIconConstraints: BoxConstraints(
+                    minWidth: AppDimensions.iconButtonSize,
+                    minHeight: AppDimensions.iconButtonSize,
                   ),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.clear,
-                            color: Color(0xFF6C757D),
-                            size: 20,
+                            color: AppColors.secondary,
+                            size: AppDimensions.iconSizeS,
                           ),
                           onPressed: () {
                             _searchController.clear();
@@ -143,11 +141,11 @@ class _SearchFilterSectionState extends State<SearchFilterSection> {
                         )
                       : null,
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.only(
+                  contentPadding: EdgeInsets.only(
                     left: 0,
-                    right: 16,
+                    right: AppDimensions.paddingL,
                     top: 14,
-                    bottom: 12,
+                    bottom: AppDimensions.paddingM,
                   ),
                 ),
               ),

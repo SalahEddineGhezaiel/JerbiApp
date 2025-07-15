@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../shared/constants/constants.dart';
+import '../../shared/widgets/page_header.dart';
 
 class SettingsContent extends StatefulWidget {
   const SettingsContent({super.key});
@@ -10,28 +12,28 @@ class SettingsContent extends StatefulWidget {
 class _SettingsContentState extends State<SettingsContent> {
   bool _notificationsEnabled = true;
   bool _darkModeEnabled = false;
-  String _selectedLanguage = 'Français';
+  String _selectedLanguage = AppStrings.languageFrench;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
         children: [
-          _buildHeader(),
+          PageHeader(title: AppStrings.settingsTitle),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppDimensions.paddingL),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildProfileSection(),
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppDimensions.spaceXXL),
                   _buildPreferencesSection(),
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppDimensions.spaceXXL),
                   _buildUserManagementSection(),
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppDimensions.spaceXXL),
                   _buildDataSection(),
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppDimensions.spaceXXL),
                   _buildAboutSection(),
                 ],
               ),
@@ -42,57 +44,22 @@ class _SettingsContentState extends State<SettingsContent> {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        color: Color(0xFF061138),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
-        ),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.settings_outlined,
-            color: Colors.white,
-            size: 28,
-          ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Text(
-              'Paramètres',
-              style: TextStyle(
-                fontFamily: 'SFPro',
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          // Removed the back arrow button
-        ],
-      ),
-    );
-  }
-
   Widget _buildProfileSection() {
     return _buildSection(
-      title: 'Profil Administrateur',
+      title: AppStrings.profileSection,
       children: [
         _buildProfileCard(),
-        const SizedBox(height: 16),
+        SizedBox(height: AppDimensions.spaceL),
         _buildSettingsTile(
           icon: Icons.edit_outlined,
-          title: 'Modifier le profil',
-          subtitle: 'Nom, email, mot de passe',
+          title: AppStrings.editProfile,
+          subtitle: AppStrings.editProfileSubtitle,
           onTap: () => _showEditProfileDialog(),
         ),
         _buildSettingsTile(
           icon: Icons.security_outlined,
-          title: 'Sécurité',
-          subtitle: 'Changer le mot de passe',
+          title: AppStrings.security,
+          subtitle: AppStrings.securitySubtitle,
           onTap: () => _showChangePasswordDialog(),
         ),
       ],
@@ -101,14 +68,14 @@ class _SettingsContentState extends State<SettingsContent> {
 
   Widget _buildProfileCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(AppDimensions.paddingXL),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: AppColors.blackWithOpacity(0.05),
+            blurRadius: AppDimensions.elevationL,
             offset: const Offset(0, 2),
           ),
         ],
@@ -116,51 +83,36 @@ class _SettingsContentState extends State<SettingsContent> {
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: AppDimensions.profileAvatarSize,
+            height: AppDimensions.profileAvatarSize,
             decoration: BoxDecoration(
-              color: const Color(0xFF061138).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(30),
+              color: AppColors.primaryWithOpacity(0.1),
+              borderRadius: BorderRadius.circular(AppDimensions.profileAvatarSize / 2),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.person,
-              color: Color(0xFF061138),
-              size: 30,
+              color: AppColors.primary,
+              size: AppDimensions.iconSize + 6,
             ),
           ),
-          const SizedBox(width: 16),
-          const Expanded(
+          SizedBox(width: AppDimensions.spaceL),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Admin Principal',
-                  style: TextStyle(
-                    fontFamily: 'SFPro',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF061138),
-                  ),
+                  AppStrings.adminProfile,
+                  style: AppTextStyles.h5.copyWith(color: AppColors.primary),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: AppDimensions.spaceXS),
                 Text(
-                  'admin@jerbi-events.com',
-                  style: TextStyle(
-                    fontFamily: 'SFPro',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF6C757D),
-                  ),
+                  AppStrings.adminEmail,
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: AppDimensions.spaceXS),
                 Text(
-                  'Super Administrateur',
-                  style: TextStyle(
-                    fontFamily: 'SFPro',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF28A745),
-                  ),
+                  AppStrings.adminRole,
+                  style: AppTextStyles.labelMedium.copyWith(color: AppColors.success),
                 ),
               ],
             ),
@@ -172,12 +124,12 @@ class _SettingsContentState extends State<SettingsContent> {
 
   Widget _buildPreferencesSection() {
     return _buildSection(
-      title: 'Préférences',
+      title: AppStrings.preferencesSection,
       children: [
         _buildSwitchTile(
           icon: Icons.notifications_outlined,
-          title: 'Notifications',
-          subtitle: 'Recevoir les notifications push',
+          title: AppStrings.notifications,
+          subtitle: AppStrings.notificationsSubtitle,
           value: _notificationsEnabled,
           onChanged: (value) {
             setState(() {
@@ -187,8 +139,8 @@ class _SettingsContentState extends State<SettingsContent> {
         ),
         _buildSwitchTile(
           icon: Icons.dark_mode_outlined,
-          title: 'Mode sombre',
-          subtitle: 'Activer le thème sombre',
+          title: AppStrings.darkMode,
+          subtitle: AppStrings.darkModeSubtitle,
           value: _darkModeEnabled,
           onChanged: (value) {
             setState(() {
@@ -198,7 +150,7 @@ class _SettingsContentState extends State<SettingsContent> {
         ),
         _buildSettingsTile(
           icon: Icons.language_outlined,
-          title: 'Langue',
+          title: AppStrings.language,
           subtitle: _selectedLanguage,
           trailing: const Icon(Icons.chevron_right),
           onTap: () => _showLanguageDialog(),
@@ -209,18 +161,18 @@ class _SettingsContentState extends State<SettingsContent> {
 
   Widget _buildUserManagementSection() {
     return _buildSection(
-      title: 'Gestion des Utilisateurs',
+      title: AppStrings.userManagementSection,
       children: [
         _buildSettingsTile(
           icon: Icons.group_outlined,
-          title: 'Gérer les administrateurs',
-          subtitle: 'Ajouter, modifier, supprimer',
+          title: AppStrings.manageAdmins,
+          subtitle: AppStrings.manageAdminsSubtitle,
           onTap: () => _showUserManagementPage(),
         ),
         _buildSettingsTile(
           icon: Icons.admin_panel_settings_outlined,
-          title: 'Permissions',
-          subtitle: 'Gérer les droits d\'accès',
+          title: AppStrings.permissions,
+          subtitle: AppStrings.permissionsSubtitle,
           onTap: () => _showPermissionsPage(),
         ),
       ],
@@ -229,24 +181,24 @@ class _SettingsContentState extends State<SettingsContent> {
 
   Widget _buildDataSection() {
     return _buildSection(
-      title: 'Données',
+      title: AppStrings.dataSection,
       children: [
         _buildSettingsTile(
           icon: Icons.file_download_outlined,
-          title: 'Exporter les données',
-          subtitle: 'Télécharger les réservations',
+          title: AppStrings.exportData,
+          subtitle: AppStrings.exportDataSubtitle,
           onTap: () => _showExportDialog(),
         ),
         _buildSettingsTile(
           icon: Icons.backup_outlined,
-          title: 'Sauvegarde',
-          subtitle: 'Sauvegarder la base de données',
+          title: AppStrings.backup,
+          subtitle: AppStrings.backupSubtitle,
           onTap: () => _showBackupDialog(),
         ),
         _buildSettingsTile(
           icon: Icons.restore_outlined,
-          title: 'Restaurer',
-          subtitle: 'Restaurer depuis une sauvegarde',
+          title: AppStrings.restore,
+          subtitle: AppStrings.restoreSubtitle,
           onTap: () => _showRestoreDialog(),
         ),
       ],
@@ -255,24 +207,24 @@ class _SettingsContentState extends State<SettingsContent> {
 
   Widget _buildAboutSection() {
     return _buildSection(
-      title: 'À propos',
+      title: AppStrings.aboutSection,
       children: [
         _buildSettingsTile(
           icon: Icons.info_outlined,
-          title: 'Version de l\'application',
-          subtitle: '1.0.0',
+          title: AppStrings.appVersionLabel,
+          subtitle: AppStrings.appVersion,
         ),
         _buildSettingsTile(
           icon: Icons.help_outline,
-          title: 'Aide et support',
-          subtitle: 'Documentation et contact',
+          title: AppStrings.helpSupport,
+          subtitle: AppStrings.helpSupportSubtitle,
           onTap: () => _showHelpDialog(),
         ),
         _buildSettingsTile(
           icon: Icons.logout_outlined,
-          title: 'Se déconnecter',
-          subtitle: 'Quitter l\'application',
-          titleColor: Colors.red,
+          title: AppStrings.logout,
+          subtitle: AppStrings.logoutSubtitle,
+          titleColor: AppColors.error,
           onTap: () => _showLogoutDialog(),
         ),
       ],
@@ -284,25 +236,20 @@ class _SettingsContentState extends State<SettingsContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          padding: EdgeInsets.only(left: AppDimensions.spaceXS, bottom: AppDimensions.spaceM),
           child: Text(
             title,
-            style: const TextStyle(
-              fontFamily: 'SFPro',
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF061138),
-            ),
+            style: AppTextStyles.h5.copyWith(color: AppColors.primary),
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusL),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
+                color: AppColors.blackWithOpacity(0.05),
+                blurRadius: AppDimensions.elevationL,
                 offset: const Offset(0, 2),
               ),
             ],
@@ -323,31 +270,27 @@ class _SettingsContentState extends State<SettingsContent> {
   }) {
     return ListTile(
       leading: Container(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(AppDimensions.paddingS),
         decoration: BoxDecoration(
-          color: const Color(0xFF061138).withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          color: AppColors.primaryWithOpacity(0.1),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusS),
         ),
-        child: Icon(icon, color: const Color(0xFF061138), size: 20),
+        child: Icon(
+          icon, 
+          color: AppColors.primary, 
+          size: AppDimensions.iconSizeS
+        ),
       ),
       title: Text(
         title,
-        style: TextStyle(
-          fontFamily: 'SFPro',
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: titleColor ?? const Color(0xFF212529),
+        style: AppTextStyles.h6.copyWith(
+          color: titleColor ?? AppColors.textPrimary,
         ),
       ),
       subtitle: subtitle != null
           ? Text(
               subtitle,
-              style: const TextStyle(
-                fontFamily: 'SFPro',
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF6C757D),
-              ),
+              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
             )
           : null,
       trailing: trailing ?? (onTap != null ? const Icon(Icons.chevron_right) : null),
@@ -364,37 +307,31 @@ class _SettingsContentState extends State<SettingsContent> {
   }) {
     return ListTile(
       leading: Container(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(AppDimensions.paddingS),
         decoration: BoxDecoration(
-          color: const Color(0xFF061138).withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          color: AppColors.primaryWithOpacity(0.1),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusS),
         ),
-        child: Icon(icon, color: const Color(0xFF061138), size: 20),
+        child: Icon(
+          icon, 
+          color: AppColors.primary, 
+          size: AppDimensions.iconSizeS
+        ),
       ),
       title: Text(
         title,
-        style: const TextStyle(
-          fontFamily: 'SFPro',
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Color(0xFF212529),
-        ),
+        style: AppTextStyles.h6.copyWith(color: AppColors.textPrimary),
       ),
       subtitle: subtitle != null
           ? Text(
               subtitle,
-              style: const TextStyle(
-                fontFamily: 'SFPro',
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF6C757D),
-              ),
+              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
             )
           : null,
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: const Color(0xFF061138),
+        activeColor: AppColors.primary,
       ),
     );
   }
@@ -402,55 +339,55 @@ class _SettingsContentState extends State<SettingsContent> {
   // Dialog methods (placeholder implementations)
   void _showEditProfileDialog() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Modifier le profil - À implémenter')),
+      SnackBar(content: Text(AppStrings.editProfilePlaceholder)),
     );
   }
 
   void _showChangePasswordDialog() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Changer le mot de passe - À implémenter')),
+      SnackBar(content: Text(AppStrings.changePasswordPlaceholder)),
     );
   }
 
   void _showLanguageDialog() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Sélection de langue - À implémenter')),
+      SnackBar(content: Text(AppStrings.languageSelectionPlaceholder)),
     );
   }
 
   void _showUserManagementPage() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Gestion des utilisateurs - À implémenter')),
+      SnackBar(content: Text(AppStrings.userManagementPlaceholder)),
     );
   }
 
   void _showPermissionsPage() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Gestion des permissions - À implémenter')),
+      SnackBar(content: Text(AppStrings.permissionsPlaceholder)),
     );
   }
 
   void _showExportDialog() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Export des données - À implémenter')),
+      SnackBar(content: Text(AppStrings.exportPlaceholder)),
     );
   }
 
   void _showBackupDialog() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Sauvegarde - À implémenter')),
+      SnackBar(content: Text(AppStrings.backupPlaceholder)),
     );
   }
 
   void _showRestoreDialog() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Restauration - À implémenter')),
+      SnackBar(content: Text(AppStrings.restorePlaceholder)),
     );
   }
 
   void _showHelpDialog() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Aide et support - À implémenter')),
+      SnackBar(content: Text(AppStrings.helpPlaceholder)),
     );
   }
 
@@ -459,22 +396,40 @@ class _SettingsContentState extends State<SettingsContent> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Se déconnecter'),
-          content: const Text('Êtes-vous sûr de vouloir vous déconnecter ?'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+          ),
+          title: Text(
+            AppStrings.logout,
+            style: AppTextStyles.h6.copyWith(color: AppColors.error),
+          ),
+          content: Text(
+            AppStrings.logoutConfirmation,
+            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Annuler'),
+              child: Text(
+                AppStrings.cancel,
+                style: AppTextStyles.buttonMedium.copyWith(color: AppColors.textSecondary),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Déconnexion - À implémenter')),
+                  SnackBar(content: Text(AppStrings.logoutPlaceholder)),
                 );
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text('Se déconnecter'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: AppColors.textOnPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                ),
+              ),
+              child: Text(AppStrings.logout, style: AppTextStyles.buttonMedium),
             ),
           ],
         );
