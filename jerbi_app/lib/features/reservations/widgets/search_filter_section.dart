@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class SearchFilterSection extends StatefulWidget {
   final Function(String) onSearch;
   final VoidCallback onFilter;
+  final bool hasActiveFilters;
 
   const SearchFilterSection({
     super.key,
     required this.onSearch,
     required this.onFilter,
+    this.hasActiveFilters = false,
   });
 
   @override
@@ -32,7 +34,9 @@ class _SearchFilterSectionState extends State<SearchFilterSection> {
         children: [
           // Filter Button
           Material(
-            color: const Color(0xFFF8F9FA),
+            color: widget.hasActiveFilters 
+                ? const Color(0xFF061138).withValues(alpha: 0.1)
+                : const Color(0xFFF8F9FA),
             borderRadius: BorderRadius.circular(12),
             child: InkWell(
               onTap: widget.onFilter,
@@ -43,14 +47,37 @@ class _SearchFilterSectionState extends State<SearchFilterSection> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: const Color(0xFFE9ECEF),
-                    width: 1,
+                    color: widget.hasActiveFilters 
+                        ? const Color(0xFF061138)
+                        : const Color(0xFFE9ECEF),
+                    width: widget.hasActiveFilters ? 2 : 1,
                   ),
                 ),
-                child: const Icon(
-                  Icons.filter_list,
-                  color: Color(0xFF6C757D),
-                  size: 20,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Icon(
+                        Icons.filter_list,
+                        color: widget.hasActiveFilters 
+                            ? const Color(0xFF061138)
+                            : const Color(0xFF6C757D),
+                        size: 20,
+                      ),
+                    ),
+                    if (widget.hasActiveFilters)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF061138),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
