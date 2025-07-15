@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../reservations/reservations_page.dart';
+import '../main/main_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -81,11 +81,11 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
         
-        // Navigate to reservations page
+        // Navigate to main page
         if (mounted) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const ReservationsPage()),
+            MaterialPageRoute(builder: (context) => const MainPage()),
           );
         }
         
