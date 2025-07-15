@@ -1,5 +1,9 @@
 import 'dart:ui';
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../../shared/constants/constants.dart';
 import '../../shared/utils/utils.dart';
 import '../main/main_page.dart';
@@ -41,6 +45,19 @@ class _LoginPageState extends State<LoginPage> {
     FocusManager.instance.primaryFocus?.unfocus();
   }
 
+  String _getApiUrl() {
+    // Different URLs for different platforms
+    if (kIsWeb) {
+      return 'http://localhost:5000/api/auth/login'; // Web
+    } else if (Platform.isAndroid) {
+      return 'http://10.0.2.2:5000/api/auth/login'; // Android emulator
+    } else if (Platform.isIOS) {
+      return 'http://localhost:5000/api/auth/login'; // iOS simulator
+    } else {
+      return 'http://localhost:5000/api/auth/login'; // Desktop
+    }
+  }
+
   Future<void> _handleLogin() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     
@@ -52,12 +69,27 @@ class _LoginPageState extends State<LoginPage> {
     });
     
     try {
-      // Simulate API call
-      await Future.delayed(AppConstants.loginDelay);
+      final apiUrl = _getApiUrl();
+      print('🔗 Attempting to connect to: $apiUrl'); // Debug log
       
-      // Check credentials
-      if (_emailController.text.trim() == AppConstants.defaultUsername && 
-          _passwordController.text == AppConstants.defaultPassword) {
+      // Make API call to your backend
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'username': _emailController.text.trim(),
+          'password': _passwordController.text,
+        }),
+      ).timeout(const Duration(seconds: 10));
+
+      print('📡 Response status: ${response.statusCode}'); // Debug log
+      print('📄 Response body: ${response.body}'); // Debug log
+
+      final responseData = json.decode(response.body);
+
+      if (response.statusCode == 200 && responseData['success'] == true) {
         // Successful login
         setState(() {
           _isLoading = false;
@@ -68,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppStrings.loginSuccess),
+              content: Text('Connexion réussie! Bienvenue ${responseData['data']['admin']['username']}'),
               backgroundColor: AppColors.success,
               duration: AppConstants.shortSnackBarDuration,
             ),
@@ -84,16 +116,23 @@ class _LoginPageState extends State<LoginPage> {
         }
         
       } else {
-        // Invalid credentials
+        // Login failed
         setState(() {
           _isLoading = false;
-          _errorMessage = AppStrings.loginErrorInvalid;
+          _errorMessage = responseData['message'] ?? 'Identifiants invalides';
         });
       }
     } catch (e) {
+      print('❌ Login error: $e'); // Debug log
       setState(() {
         _isLoading = false;
-        _errorMessage = AppStrings.loginErrorGeneral;
+        if (e.toString().contains('TimeoutException')) {
+          _errorMessage = 'Timeout: Le serveur met trop de temps à répondre';
+        } else if (e.toString().contains('SocketException') || e.toString().contains('Connection refused')) {
+          _errorMessage = 'Impossible de se connecter au serveur.\n\nVérifiez que:\n• Le serveur backend est démarré\n• Il fonctionne sur le port 5000\n• URL: ${_getApiUrl()}';
+        } else {
+          _errorMessage = 'Erreur de connexion: ${e.toString()}';
+        }
       });
     }
   }
@@ -169,6 +208,7 @@ class _LoginPageState extends State<LoginPage> {
         border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
             Icons.error_outline,
@@ -357,10 +397,10 @@ class _GlassTextField extends StatelessWidget {
         ),
       ),
       validator: (value) {
-        if (hintText == AppStrings.usernameHint) {
-          return Validators.validateRequired(value, AppStrings.usernameRequired);
-        } else if (hintText == AppStrings.passwordHint) {
-          return Validators.validatePassword(value);
+        if (value == null || value.trim().isEmpty) {
+          return hintText == AppStrings.usernameHint 
+              ? 'Veuillez saisir votre identifiant'
+              : 'Veuillez saisir votre mot de passe';
         }
         return null;
       },
