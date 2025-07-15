@@ -96,7 +96,7 @@ class Reservation {
     }
 
     return Reservation(
-      id: json['id'] ?? '',
+      id: json['_id'] ?? json['id'] ?? '',
       nomPrenom: json['nomPrenom'] ?? '',
       email: json['email'] ?? '',
       telephone: json['telephone'] ?? '',
