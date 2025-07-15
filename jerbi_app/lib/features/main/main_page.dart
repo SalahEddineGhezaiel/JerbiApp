@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../reservations/reservations_content.dart';
 import '../statistics/statistics_content.dart';
 import '../settings/settings_content.dart';
-import '../reservations/widgets/bottom_navigation.dart';
+import '../../shared/widgets/bottom_navigation.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
