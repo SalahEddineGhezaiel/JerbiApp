@@ -30,17 +30,12 @@ class _StatisticsContentState extends State<StatisticsContent> {
           PageHeader(title: AppStrings.statisticsTitle),
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(
-                AppDimensions.paddingL, 
-                AppDimensions.paddingM, 
-                AppDimensions.paddingL, 
-                AppDimensions.paddingXXXL
-              ),
+              padding: EdgeInsets.all(AppDimensions.paddingL),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildPeriodSelector(),
-                  SizedBox(height: AppDimensions.spaceM),
+                  SizedBox(height: AppDimensions.spaceL),
                   _buildStatsCards(),
                   SizedBox(height: AppDimensions.spaceL),
                   _buildChartsSection(),
@@ -58,7 +53,7 @@ class _StatisticsContentState extends State<StatisticsContent> {
 
   Widget _buildPeriodSelector() {
     return SizedBox(
-      height: 45,
+      height: 40,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: AppConstants.timePeriods.length,
@@ -76,21 +71,23 @@ class _StatisticsContentState extends State<StatisticsContent> {
               },
               child: Container(
                 padding: EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL + 2, 
-                  vertical: AppDimensions.paddingS + 2
+                  horizontal: AppDimensions.paddingL, 
+                  vertical: AppDimensions.paddingS
                 ),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : AppColors.surface,
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusCircular / 2),
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: isSelected ? AppColors.primary : AppColors.border,
                   ),
                 ),
-                child: Text(
-                  period,
-                  style: AppTextStyles.labelMedium.copyWith(
-                    color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
+                child: Center(
+                  child: Text(
+                    period,
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -102,39 +99,59 @@ class _StatisticsContentState extends State<StatisticsContent> {
   }
 
   Widget _buildStatsCards() {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: AppDimensions.spaceM,
-      mainAxisSpacing: AppDimensions.spaceM,
-      childAspectRatio: AppDimensions.statCardAspectRatio,
-      children: [
-        _buildStatCard(
-          AppStrings.totalReservations,
-          '${_mockStats['totalReservations']}',
-          Icons.event_note,
-          AppColors.chartGreen,
-        ),
-        _buildStatCard(
-          AppStrings.confirmedReservations,
-          '${_mockStats['confirmedReservations']}',
-          Icons.check_circle,
-          AppColors.chartBlue,
-        ),
-        _buildStatCard(
-          AppStrings.pendingReservations,
-          '${_mockStats['pendingReservations']}',
-          Icons.schedule,
-          AppColors.chartOrange,
-        ),
-        _buildStatCard(
-          AppStrings.cancelledReservations,
-          '${_mockStats['cancelledReservations']}',
-          Icons.cancel,
-          AppColors.chartRed,
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculate card width based on available space
+        final cardWidth = (constraints.maxWidth - AppDimensions.spaceM) / 2;
+        final cardHeight = cardWidth * 0.8; // Aspect ratio of 0.8
+        
+        return Wrap(
+          spacing: AppDimensions.spaceM,
+          runSpacing: AppDimensions.spaceM,
+          children: [
+            SizedBox(
+              width: cardWidth,
+              height: cardHeight,
+              child: _buildStatCard(
+                AppStrings.totalReservations,
+                '${_mockStats['totalReservations']}',
+                Icons.event_note,
+                AppColors.chartGreen,
+              ),
+            ),
+            SizedBox(
+              width: cardWidth,
+              height: cardHeight,
+              child: _buildStatCard(
+                AppStrings.confirmedReservations,
+                '${_mockStats['confirmedReservations']}',
+                Icons.check_circle,
+                AppColors.chartBlue,
+              ),
+            ),
+            SizedBox(
+              width: cardWidth,
+              height: cardHeight,
+              child: _buildStatCard(
+                AppStrings.pendingReservations,
+                '${_mockStats['pendingReservations']}',
+                Icons.schedule,
+                AppColors.chartOrange,
+              ),
+            ),
+            SizedBox(
+              width: cardWidth,
+              height: cardHeight,
+              child: _buildStatCard(
+                AppStrings.cancelledReservations,
+                '${_mockStats['cancelledReservations']}',
+                Icons.cancel,
+                AppColors.chartRed,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -154,29 +171,39 @@ class _StatisticsContentState extends State<StatisticsContent> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
+          Container(
+            padding: EdgeInsets.all(AppDimensions.paddingS),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: EdgeInsets.all(AppDimensions.paddingXS + 2),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+              Text(
+                value,
+                style: AppTextStyles.h3.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
                 ),
-                child: Icon(icon, color: color, size: AppDimensions.iconSizeXS),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              const Spacer(),
+              SizedBox(height: AppDimensions.spaceXS),
+              Text(
+                title,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
-          ),
-          SizedBox(height: AppDimensions.spaceS),
-          Text(
-            value,
-            style: AppTextStyles.h4.copyWith(color: AppColors.primary),
-          ),
-          SizedBox(height: AppDimensions.spaceXS),
-          Text(
-            title,
-            style: AppTextStyles.labelSmall.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -185,6 +212,7 @@ class _StatisticsContentState extends State<StatisticsContent> {
 
   Widget _buildChartsSection() {
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.all(AppDimensions.paddingL),
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -206,7 +234,8 @@ class _StatisticsContentState extends State<StatisticsContent> {
           ),
           SizedBox(height: AppDimensions.spaceM),
           Container(
-            height: AppDimensions.chartHeight,
+            height: 200,
+            width: double.infinity,
             decoration: BoxDecoration(
               color: AppColors.background,
               borderRadius: BorderRadius.circular(AppDimensions.radiusM),
@@ -217,13 +246,15 @@ class _StatisticsContentState extends State<StatisticsContent> {
                 children: [
                   Icon(
                     Icons.show_chart,
-                    size: AppDimensions.iconSize + 12,
+                    size: 48,
                     color: AppColors.textSecondary,
                   ),
-                  SizedBox(height: AppDimensions.paddingXS + 2),
+                  SizedBox(height: AppDimensions.spaceS),
                   Text(
                     AppStrings.chartPlaceholder,
-                    style: AppTextStyles.labelMedium.copyWith(color: AppColors.textSecondary),
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -244,6 +275,7 @@ class _StatisticsContentState extends State<StatisticsContent> {
     ];
 
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.all(AppDimensions.paddingL),
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -265,22 +297,25 @@ class _StatisticsContentState extends State<StatisticsContent> {
           ),
           SizedBox(height: AppDimensions.spaceM),
           ...activities.map((activity) => Padding(
-            padding: EdgeInsets.only(bottom: AppDimensions.spaceS + 2),
+            padding: EdgeInsets.only(bottom: AppDimensions.spaceS),
             child: Row(
               children: [
                 Container(
-                  width: AppDimensions.chartIndicatorSize,
-                  height: AppDimensions.chartIndicatorSize,
+                  width: 12,
+                  height: 12,
                   decoration: BoxDecoration(
                     color: activity['color'] as Color,
-                    borderRadius: BorderRadius.circular(AppDimensions.chartIndicatorSize / 2),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                 ),
-                SizedBox(width: AppDimensions.spaceS + 2),
+                SizedBox(width: AppDimensions.spaceM),
                 Expanded(
                   child: Text(
                     activity['name'] as String,
-                    style: AppTextStyles.labelMedium.copyWith(color: AppColors.textPrimary),
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Text(
