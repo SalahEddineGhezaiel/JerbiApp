@@ -39,6 +39,59 @@ class ReservationDetailsDialog extends StatelessWidget {
     );
   }
 
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext confirmContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: const Text(
+            'Supprimer la réservation',
+            style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          content: Text(
+            'Êtes-vous sûr de vouloir supprimer la réservation de ${reservation.nomPrenom} ?\n\nCette action est irréversible.',
+            style: const TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(confirmContext),
+              child: const Text('Annuler', style: TextStyle(fontSize: 16)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Close confirmation dialog
+                Navigator.pop(confirmContext);
+                // Close details dialog
+                Navigator.pop(context);
+                // Show success message immediately
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Réservation supprimée'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+                // Call delete function
+                onDelete();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Supprimer', style: TextStyle(fontSize: 16)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -86,6 +139,18 @@ class ReservationDetailsDialog extends StatelessWidget {
                           size: AppDimensions.iconSizeS,
                         ),
                         onPressed: () {
+                          // Check permission first
+                          if (!TokenManager.canEditReservations()) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Vous n\'avez pas la permission de modifier des réservations'),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                            return;
+                          }
+                          
                           Navigator.pop(context);
                           onEdit();
                         },
@@ -107,10 +172,7 @@ class ReservationDetailsDialog extends StatelessWidget {
                           size: AppDimensions.iconSizeS,
                         ),
                         onPressed: () {
-                          // Always close dialog first
-                          Navigator.pop(context);
-                          
-                          // Then check permission and show appropriate message
+                          // Check permission first
                           if (!TokenManager.canDeleteReservations()) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -119,10 +181,11 @@ class ReservationDetailsDialog extends StatelessWidget {
                                 duration: Duration(seconds: 3),
                               ),
                             );
-                          } else {
-                            // Actually delete the reservation
-                            onDelete();
+                            return;
                           }
+                          
+                          // Show confirmation dialog
+                          _showDeleteConfirmation(context);
                         },
                       ),
                     ),

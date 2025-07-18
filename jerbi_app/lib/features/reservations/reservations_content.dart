@@ -184,6 +184,71 @@ class _ReservationsContentState extends State<ReservationsContent> {
     }
   }
 
+  // Update reservation in backend
+  Future<void> _updateReservationInBackend(Reservation reservation) async {
+    try {
+      final apiUrl = '${_getApiUrl()}/reservations/${reservation.id}';
+      print('✏️ Updating reservation: $apiUrl');
+
+      final requestBody = {
+        'nomPrenom': reservation.nomPrenom,
+        'email': reservation.email,
+        'telephone': reservation.telephone,
+        'nombreAdultes': reservation.nombreAdultes,
+        'nombreEnfants': reservation.nombreEnfants,
+        'enfantsParAge': reservation.enfantsParAge,
+        'totalPersonnes': reservation.totalPersonnes,
+        'date': reservation.date.toIso8601String(),
+        'activity': reservation.activity,
+      };
+
+      print('📤 Update request body: ${json.encode(requestBody)}');
+
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        headers: _getHeaders(),
+        body: json.encode(requestBody),
+      ).timeout(const Duration(seconds: 30));
+
+      print('📡 Update response status: ${response.statusCode}');
+      print('📄 Update response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        
+        if (responseData['success'] == true) {
+          // Successfully updated in backend, now update local lists
+          setState(() {
+            final index = _allReservations.indexWhere((r) => r.id == reservation.id);
+            if (index != -1) {
+              _allReservations[index] = reservation;
+            }
+            _applyFilters();
+          });
+          
+          print('✅ Reservation updated successfully');
+        } else {
+          throw Exception(responseData['message'] ?? 'Erreur lors de la mise à jour');
+        }
+      } else if (response.statusCode == 401) {
+        // Authentication error
+        TokenManager.clearAll();
+        throw Exception('Session expirée. Veuillez vous reconnecter.');
+      } else if (response.statusCode == 403) {
+        // Permission error
+        throw Exception('Vous n\'avez pas la permission de modifier des réservations');
+      } else if (response.statusCode == 404) {
+        // Reservation not found
+        throw Exception('Réservation non trouvée');
+      } else {
+        throw Exception('Erreur serveur: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Error updating reservation: $e');
+      rethrow; // Re-throw to handle in the calling method
+    }
+  }
+
   // Handle search functionality
   void _handleSearch(String query) {
     setState(() {
@@ -309,77 +374,70 @@ class _ReservationsContentState extends State<ReservationsContent> {
 
   // Handle edit reservation
   void _handleEditReservation(Reservation reservation) {
+    // Check permission first
+    if (!TokenManager.canEditReservations()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Vous n\'avez pas la permission de modifier des réservations'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return EditReservationDialog(
           reservation: reservation,
-          onReservationUpdated: (Reservation updatedReservation) {
-            // TODO: Send to backend API
-            setState(() {
-              // Find and update the reservation in the main list
-              final index = _allReservations.indexWhere((r) => r.id == updatedReservation.id);
-              if (index != -1) {
-                _allReservations[index] = updatedReservation;
+          onReservationUpdated: (Reservation updatedReservation) async {
+            try {
+              // Update in backend
+              await _updateReservationInBackend(updatedReservation);
+              
+              // Show success message
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${AppStrings.reservationDetails} ${updatedReservation.nomPrenom} ${AppStrings.reservationUpdated}'),
+                    backgroundColor: AppColors.success,
+                    duration: AppConstants.snackBarDuration,
+                  ),
+                );
               }
-              _applyFilters();
-            });
-            
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${AppStrings.reservationDetails} ${updatedReservation.nomPrenom} ${AppStrings.reservationUpdated}'),
-                backgroundColor: AppColors.info,
-                duration: AppConstants.snackBarDuration,
-              ),
-            );
+            } catch (e) {
+              // Show error message
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Erreur: ${e.toString()}'),
+                    backgroundColor: AppColors.error,
+                    duration: AppConstants.snackBarDuration,
+                  ),
+                );
+              }
+            }
           },
         );
       },
     );
   }
 
-  // Handle delete reservation - simplified for direct call
+  // Handle delete reservation - simple backend deletion only
   void _handleDeleteReservation(Reservation reservation) async {
-    // Show loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
-
     try {
-      // Delete from backend
+      // Delete from backend silently
       await _deleteReservationFromBackend(reservation.id);
-      
-      // Close loading dialog
-      if (mounted) Navigator.of(context).pop();
-      
-      // Show success message
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${AppStrings.reservationDetails} ${reservation.nomPrenom} ${AppStrings.reservationDeleted}'),
-            backgroundColor: AppColors.success,
-            duration: AppConstants.snackBarDuration,
-          ),
-        );
-      }
     } catch (e) {
-      // Close loading dialog
-      if (mounted) Navigator.of(context).pop();
-      
-      // Show error message
+      // Show error if deletion fails
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erreur: ${e.toString()}'),
-            backgroundColor: AppColors.error,
-            duration: AppConstants.snackBarDuration,
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
