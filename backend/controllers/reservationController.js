@@ -119,6 +119,14 @@ const getReservationById = async (req, res) => {
 // Create new reservation
 const createReservation = async (req, res) => {
   try {
+    // Check if admin has create permission
+    if (!req.admin.permissions.canCreateReservations) {
+      return res.status(403).json({
+        success: false,
+        message: 'Vous n\'avez pas la permission de créer des réservations'
+      });
+    }
+
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -174,6 +182,14 @@ const createReservation = async (req, res) => {
 const updateReservation = async (req, res) => {
   try {
     const { id } = req.params;
+    
+    // Check if admin has edit permission
+    if (!req.admin.permissions.canEditReservations) {
+      return res.status(403).json({
+        success: false,
+        message: 'Vous n\'avez pas la permission de modifier des réservations'
+      });
+    }
     
     // Check for validation errors
     const errors = validationResult(req);
@@ -241,6 +257,14 @@ const updateReservation = async (req, res) => {
 const deleteReservation = async (req, res) => {
   try {
     const { id } = req.params;
+    
+    // Check if admin has delete permission
+    if (!req.admin.permissions.canDeleteReservations) {
+      return res.status(403).json({
+        success: false,
+        message: 'Vous n\'avez pas la permission de supprimer des réservations'
+      });
+    }
     
     const reservation = await Reservation.findByIdAndDelete(id);
     

@@ -54,13 +54,14 @@ const login = async (req, res) => {
     // Generate token
     const token = generateToken(admin._id);
 
-    // Send response
+    // Send response with full admin data including permissions
     return sendSuccess(res, 'Login successful', {
       admin: {
         id: admin._id,
         username: admin.username,
         email: admin.email,
         role: admin.role,
+        permissions: admin.permissions,
         lastLogin: admin.lastLogin
       },
       token,
@@ -79,7 +80,7 @@ const login = async (req, res) => {
  */
 const verifyToken = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.admin.adminId).select('-password');
+    const admin = await Admin.findById(req.admin._id).select('-password');
     
     if (!admin || !admin.isActive) {
       return sendUnauthorized(res, 'Admin not found or inactive');
@@ -91,6 +92,7 @@ const verifyToken = async (req, res) => {
         username: admin.username,
         email: admin.email,
         role: admin.role,
+        permissions: admin.permissions,
         lastLogin: admin.lastLogin
       }
     });
