@@ -28,6 +28,7 @@ class TokenManager {
     _adminData = adminData;
     if (kDebugMode) {
       print('👤 Admin data saved: ${adminData['username'] ?? 'Unknown'}');
+      print('🔑 Permissions: ${getPermissionsSummary()}');
     }
   }
 
@@ -74,6 +75,77 @@ class TokenManager {
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+    };
+  }
+
+  /// Check if admin has specific permission
+  static bool hasPermission(String permission) {
+    final adminData = getAdminData();
+    if (adminData == null) return false;
+    
+    final permissions = adminData['permissions'];
+    if (permissions == null) return false;
+    
+    return permissions[permission] == true;
+  }
+
+  /// Check if admin can view reservations
+  static bool canViewReservations() {
+    return hasPermission('canViewReservations');
+  }
+
+  /// Check if admin can create reservations
+  static bool canCreateReservations() {
+    return hasPermission('canCreateReservations');
+  }
+
+  /// Check if admin can edit reservations
+  static bool canEditReservations() {
+    return hasPermission('canEditReservations');
+  }
+
+  /// Check if admin can delete reservations
+  static bool canDeleteReservations() {
+    return hasPermission('canDeleteReservations');
+  }
+
+  /// Check if admin can view statistics
+  static bool canViewStatistics() {
+    return hasPermission('canViewStatistics');
+  }
+
+  /// Check if admin can manage settings
+  static bool canManageSettings() {
+    return hasPermission('canManageSettings');
+  }
+
+  /// Check if admin can create other admins
+  static bool canCreateAdmins() {
+    return hasPermission('canCreateAdmins');
+  }
+
+  /// Check if admin can delete other admins
+  static bool canDeleteAdmins() {
+    return hasPermission('canDeleteAdmins');
+  }
+
+  /// Check if admin is super admin
+  static bool isSuperAdmin() {
+    return getAdminRole() == 'super-admin';
+  }
+
+  /// Get admin permissions summary for debugging
+  static Map<String, bool> getPermissionsSummary() {
+    return {
+      'canViewReservations': canViewReservations(),
+      'canCreateReservations': canCreateReservations(),
+      'canEditReservations': canEditReservations(),
+      'canDeleteReservations': canDeleteReservations(),
+      'canViewStatistics': canViewStatistics(),
+      'canManageSettings': canManageSettings(),
+      'canCreateAdmins': canCreateAdmins(),
+      'canDeleteAdmins': canDeleteAdmins(),
+      'isSuperAdmin': isSuperAdmin(),
     };
   }
 }

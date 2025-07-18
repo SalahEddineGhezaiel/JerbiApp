@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../shared/constants/constants.dart';
+import '../../../shared/utils/token_manager.dart';
 import '../models/reservation_model.dart';
 
 class ReservationDetailsDialog extends StatelessWidget {
@@ -106,8 +107,22 @@ class ReservationDetailsDialog extends StatelessWidget {
                           size: AppDimensions.iconSizeS,
                         ),
                         onPressed: () {
+                          // Always close dialog first
                           Navigator.pop(context);
-                          onDelete();
+                          
+                          // Then check permission and show appropriate message
+                          if (!TokenManager.canDeleteReservations()) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Vous ne pouvez pas supprimer les réservations'),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          } else {
+                            // Actually delete the reservation
+                            onDelete();
+                          }
                         },
                       ),
                     ),

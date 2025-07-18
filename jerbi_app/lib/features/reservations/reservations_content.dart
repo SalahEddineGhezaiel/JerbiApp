@@ -136,6 +136,54 @@ class _ReservationsContentState extends State<ReservationsContent> {
     }
   }
 
+  // Delete reservation from backend
+  Future<void> _deleteReservationFromBackend(String reservationId) async {
+    try {
+      final apiUrl = '${_getApiUrl()}/reservations/$reservationId';
+      print('🗑️ Deleting reservation: $apiUrl');
+
+      final response = await http.delete(
+        Uri.parse(apiUrl),
+        headers: _getHeaders(),
+      ).timeout(const Duration(seconds: 30));
+
+      print('📡 Delete response status: ${response.statusCode}');
+      print('📄 Delete response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        
+        if (responseData['success'] == true) {
+          // Successfully deleted from backend, now remove from local lists
+          setState(() {
+            _allReservations.removeWhere((r) => r.id == reservationId);
+            _applyFilters(); // This will update _filteredReservations
+          });
+          
+          print('✅ Reservation deleted successfully');
+        } else {
+          throw Exception(responseData['message'] ?? 'Erreur lors de la suppression');
+        }
+      } else if (response.statusCode == 401) {
+        // Authentication error
+        TokenManager.clearAll();
+        throw Exception('Session expirée. Veuillez vous reconnecter.');
+      } else if (response.statusCode == 404) {
+        // Reservation not found - remove from local list anyway
+        setState(() {
+          _allReservations.removeWhere((r) => r.id == reservationId);
+          _applyFilters();
+        });
+        throw Exception('Réservation non trouvée (déjà supprimée)');
+      } else {
+        throw Exception('Erreur serveur: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Error deleting reservation: $e');
+      rethrow; // Re-throw to handle in the calling method
+    }
+  }
+
   // Handle search functionality
   void _handleSearch(String query) {
     setState(() {
@@ -291,30 +339,51 @@ class _ReservationsContentState extends State<ReservationsContent> {
     );
   }
 
-  // Handle delete reservation
-  void _handleDeleteReservation(Reservation reservation) {
+  // Handle delete reservation - simplified for direct call
+  void _handleDeleteReservation(Reservation reservation) async {
+    // Show loading indicator
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
-        return DeleteReservationDialog(
-          reservation: reservation,
-          onConfirm: () {
-            // TODO: Send to backend API
-            setState(() {
-              _allReservations.removeWhere((r) => r.id == reservation.id);
-              _filteredReservations.removeWhere((r) => r.id == reservation.id);
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${AppStrings.reservationDetails} ${reservation.nomPrenom} ${AppStrings.reservationDeleted}'),
-                backgroundColor: AppColors.error,
-                duration: AppConstants.snackBarDuration,
-              ),
-            );
-          },
+        return const Center(
+          child: CircularProgressIndicator(),
         );
       },
     );
+
+    try {
+      // Delete from backend
+      await _deleteReservationFromBackend(reservation.id);
+      
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+      
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${AppStrings.reservationDetails} ${reservation.nomPrenom} ${AppStrings.reservationDeleted}'),
+            backgroundColor: AppColors.success,
+            duration: AppConstants.snackBarDuration,
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+      
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+            duration: AppConstants.snackBarDuration,
+          ),
+        );
+      }
+    }
   }
 
   // Refresh reservations
