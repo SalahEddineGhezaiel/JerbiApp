@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../shared/constants/constants.dart';
-import '../../shared/utils/utils.dart';
+import '../../shared/utils/token_manager.dart';
 import '../main/main_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -90,6 +90,13 @@ class _LoginPageState extends State<LoginPage> {
       final responseData = json.decode(response.body);
 
       if (response.statusCode == 200 && responseData['success'] == true) {
+        // Save token and admin data to memory
+        final token = responseData['data']['token'];
+        final adminData = responseData['data']['admin'];
+        
+        TokenManager.saveToken(token);
+        TokenManager.saveAdminData(adminData);
+        
         // Successful login
         setState(() {
           _isLoading = false;
@@ -100,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Connexion réussie! Bienvenue ${responseData['data']['admin']['username']}'),
+              content: Text('Connexion réussie! Bienvenue ${adminData['username']}'),
               backgroundColor: AppColors.success,
               duration: AppConstants.shortSnackBarDuration,
             ),

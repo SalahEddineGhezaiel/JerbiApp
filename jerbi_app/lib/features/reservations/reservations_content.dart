@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../../shared/constants/constants.dart';
+import '../../shared/utils/token_manager.dart';
 import 'widgets/reservations_header.dart';
 import 'widgets/search_filter_section.dart';
 import 'widgets/reservations_table.dart';
@@ -14,122 +19,14 @@ class ReservationsContent extends StatefulWidget {
 }
 
 class _ReservationsContentState extends State<ReservationsContent> {
-  // Sample data for demonstration
-  final List<Reservation> _allReservations = [
-    Reservation(
-      id: '1', 
-      nomPrenom: 'Ahmed Ben Ali', 
-      email: 'ahmed.benali@email.com',
-      telephone: '+216 98 123 456',
-      nombreAdultes: 2,
-      nombreEnfants: 1,
-      enfantsParAge: {'4_8': 1},
-      date: DateTime.now(), 
-      activity: 'Balade en mer avec kayak'
-    ),
-    Reservation(
-      id: '2', 
-      nomPrenom: 'Fatima Zahra', 
-      email: 'fatima.zahra@email.com',
-      telephone: '+216 97 234 567',
-      nombreAdultes: 4,
-      nombreEnfants: 2,
-      enfantsParAge: {'moins_4': 1, '9_12': 1},
-      date: DateTime.now().add(const Duration(days: 1)), 
-      activity: 'Sortie bateau à Haouaria'
-    ),
-    Reservation(
-      id: '3', 
-      nomPrenom: 'Mohamed Salah', 
-      email: 'mohamed.salah@email.com',
-      telephone: '+216 96 345 678',
-      nombreAdultes: 3,
-      nombreEnfants: 0,
-      enfantsParAge: {},
-      date: DateTime.now().add(const Duration(days: 2)), 
-      activity: 'Balade en mer avec bateau'
-    ),
-    Reservation(
-      id: '4', 
-      nomPrenom: 'Leila Mansouri', 
-      email: 'leila.mansouri@email.com',
-      telephone: '+216 95 456 789',
-      nombreAdultes: 2,
-      nombreEnfants: 0,
-      enfantsParAge: {},
-      date: DateTime.now().add(const Duration(days: 3)), 
-      activity: 'Plongée sous marine'
-    ),
-    Reservation(
-      id: '5', 
-      nomPrenom: 'Karim Bouazizi', 
-      email: 'karim.bouazizi@email.com',
-      telephone: '+216 94 567 890',
-      nombreAdultes: 6,
-      nombreEnfants: 3,
-      enfantsParAge: {'moins_4': 1, '4_8': 1, '9_12': 1},
-      date: DateTime.now().add(const Duration(days: 4)), 
-      activity: 'Haouaria one day'
-    ),
-    Reservation(
-      id: '6', 
-      nomPrenom: 'Nadia Trabelsi', 
-      email: 'nadia.trabelsi@email.com',
-      telephone: '+216 93 678 901',
-      nombreAdultes: 4,
-      nombreEnfants: 2,
-      enfantsParAge: {'4_8': 2},
-      date: DateTime.now().add(const Duration(days: 5)), 
-      activity: 'Camping'
-    ),
-    Reservation(
-      id: '7', 
-      nomPrenom: 'Youssef Khelifi', 
-      email: 'youssef.khelifi@email.com',
-      telephone: '+216 92 789 012',
-      nombreAdultes: 2,
-      nombreEnfants: 1,
-      enfantsParAge: {'9_12': 1},
-      date: DateTime.now().add(const Duration(days: 6)), 
-      activity: 'Journée crique'
-    ),
-    Reservation(
-      id: '8', 
-      nomPrenom: 'Amina Gharbi', 
-      email: 'amina.gharbi@email.com',
-      telephone: '+216 91 890 123',
-      nombreAdultes: 5,
-      nombreEnfants: 0,
-      enfantsParAge: {},
-      date: DateTime.now().add(const Duration(days: 7)), 
-      activity: 'Balade en mer avec kayak'
-    ),
-    Reservation(
-      id: '9', 
-      nomPrenom: 'Sami Jebali', 
-      email: 'sami.jebali@email.com',
-      telephone: '+216 90 901 234',
-      nombreAdultes: 3,
-      nombreEnfants: 2,
-      enfantsParAge: {'moins_4': 2},
-      date: DateTime.now().add(const Duration(days: 8)), 
-      activity: 'Sortie bateau à Haouaria'
-    ),
-    Reservation(
-      id: '10', 
-      nomPrenom: 'Rim Sassi', 
-      email: 'rim.sassi@email.com',
-      telephone: '+216 99 012 345',
-      nombreAdultes: 2,
-      nombreEnfants: 1,
-      enfantsParAge: {'4_8': 1},
-      date: DateTime.now().add(const Duration(days: 9)), 
-      activity: 'Plongée sous marine'
-    ),
-  ];
-
+  // Data state
+  List<Reservation> _allReservations = [];
   List<Reservation> _filteredReservations = [];
   String _searchQuery = '';
+  
+  // Loading and error state
+  bool _isLoading = false;
+  String? _errorMessage;
   
   // Filter state
   DateTime? _selectedFilterStartDate;
@@ -140,7 +37,103 @@ class _ReservationsContentState extends State<ReservationsContent> {
   @override
   void initState() {
     super.initState();
-    _filteredReservations = _allReservations;
+    _loadReservations();
+  }
+
+  // Get API URL based on platform
+  String _getApiUrl() {
+    if (kIsWeb) {
+      return 'http://localhost:5000/api';
+    } else if (Platform.isAndroid) {
+      return 'http://10.0.2.2:5000/api';
+    } else if (Platform.isIOS) {
+      return 'http://localhost:5000/api';
+    } else {
+      return 'http://localhost:5000/api';
+    }
+  }
+
+  // Get headers with authentication using TokenManager
+  Map<String, String> _getHeaders() {
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      if (TokenManager.isAuthenticated()) 
+        'Authorization': 'Bearer ${TokenManager.getToken()}',
+    };
+  }
+
+  // Load reservations from backend
+  Future<void> _loadReservations() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final apiUrl = '${_getApiUrl()}/reservations';
+      print('🔗 Loading reservations from: $apiUrl');
+      print('🔐 Authenticated: ${TokenManager.isAuthenticated()}');
+      if (TokenManager.isAuthenticated()) {
+        print('👤 Admin: ${TokenManager.getAdminUsername()}');
+      }
+
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: _getHeaders(),
+      ).timeout(const Duration(seconds: 30));
+
+      print('📡 Response status: ${response.statusCode}');
+      print('📄 Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        
+        if (responseData['success'] == true) {
+          final reservationsData = responseData['data']['reservations'] as List;
+          
+          setState(() {
+            _allReservations = reservationsData
+                .map((item) => Reservation.fromJson(item))
+                .toList();
+            _applyFilters();
+            _isLoading = false;
+          });
+          
+          print('✅ Loaded ${_allReservations.length} reservations');
+        } else {
+          setState(() {
+            _errorMessage = responseData['message'] ?? 'Erreur lors du chargement';
+            _isLoading = false;
+          });
+        }
+      } else if (response.statusCode == 401) {
+        setState(() {
+          _errorMessage = 'Session expirée. Veuillez vous reconnecter.';
+          _isLoading = false;
+        });
+        // Clear token and redirect to login
+        TokenManager.clearAll();
+      } else {
+        setState(() {
+          _errorMessage = 'Erreur serveur: ${response.statusCode}';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('❌ Error loading reservations: $e');
+      setState(() {
+        if (e.toString().contains('TimeoutException')) {
+          _errorMessage = 'Timeout: Le serveur met trop de temps à répondre';
+        } else if (e.toString().contains('SocketException') || 
+                   e.toString().contains('Connection refused')) {
+          _errorMessage = 'Impossible de se connecter au serveur.\n\nVérifiez que:\n• Le serveur backend est démarré\n• Il fonctionne sur le port 5000';
+        } else {
+          _errorMessage = 'Erreur de connexion: ${e.toString()}';
+        }
+        _isLoading = false;
+      });
+    }
   }
 
   // Handle search functionality
@@ -233,6 +226,7 @@ class _ReservationsContentState extends State<ReservationsContent> {
       builder: (BuildContext context) {
         return AddReservationDialog(
           onReservationAdded: (Reservation newReservation) {
+            // TODO: Send to backend API
             setState(() {
               _allReservations.add(newReservation);
               _applyFilters();
@@ -274,6 +268,7 @@ class _ReservationsContentState extends State<ReservationsContent> {
         return EditReservationDialog(
           reservation: reservation,
           onReservationUpdated: (Reservation updatedReservation) {
+            // TODO: Send to backend API
             setState(() {
               // Find and update the reservation in the main list
               final index = _allReservations.indexWhere((r) => r.id == updatedReservation.id);
@@ -304,6 +299,7 @@ class _ReservationsContentState extends State<ReservationsContent> {
         return DeleteReservationDialog(
           reservation: reservation,
           onConfirm: () {
+            // TODO: Send to backend API
             setState(() {
               _allReservations.removeWhere((r) => r.id == reservation.id);
               _filteredReservations.removeWhere((r) => r.id == reservation.id);
@@ -318,6 +314,70 @@ class _ReservationsContentState extends State<ReservationsContent> {
           },
         );
       },
+    );
+  }
+
+  // Refresh reservations
+  Future<void> _handleRefresh() async {
+    await _loadReservations();
+  }
+
+  // Build error widget
+  Widget _buildErrorWidget() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(AppDimensions.paddingL),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: AppDimensions.iconSize * 2,
+              color: AppColors.error,
+            ),
+            SizedBox(height: AppDimensions.spaceM),
+            Text(
+              'Erreur de chargement',
+              style: AppTextStyles.h6.copyWith(color: AppColors.error),
+            ),
+            SizedBox(height: AppDimensions.spaceS),
+            Text(
+              _errorMessage ?? 'Une erreur est survenue',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+            ),
+            SizedBox(height: AppDimensions.spaceL),
+            ElevatedButton.icon(
+              onPressed: _handleRefresh,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Réessayer'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.textOnPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Build loading widget
+  Widget _buildLoadingWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+          ),
+          SizedBox(height: AppDimensions.spaceM),
+          Text(
+            'Chargement des réservations...',
+            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+          ),
+        ],
+      ),
     );
   }
 
@@ -343,12 +403,19 @@ class _ReservationsContentState extends State<ReservationsContent> {
               hasActiveFilters: _hasActiveFilters,
             ),
             
-            // Main Content - Reservations Table
+            // Main Content
             Expanded(
-              child: ReservationsTable(
-                reservations: _filteredReservations,
-                onViewDetails: _handleViewDetails,
-              ),
+              child: _isLoading
+                  ? _buildLoadingWidget()
+                  : _errorMessage != null
+                      ? _buildErrorWidget()
+                      : RefreshIndicator(
+                          onRefresh: _handleRefresh,
+                          child: ReservationsTable(
+                            reservations: _filteredReservations,
+                            onViewDetails: _handleViewDetails,
+                          ),
+                        ),
             ),
           ],
         ),
