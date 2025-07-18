@@ -136,6 +136,74 @@ class _ReservationsContentState extends State<ReservationsContent> {
     }
   }
 
+  // Create reservation in backend
+  Future<Reservation> _createReservationInBackend(Reservation reservation) async {
+    try {
+      final apiUrl = '${_getApiUrl()}/reservations';
+      print('➕ Creating reservation: $apiUrl');
+
+      final requestBody = {
+        'nomPrenom': reservation.nomPrenom,
+        'email': reservation.email,
+        'telephone': reservation.telephone,
+        'nombreAdultes': reservation.nombreAdultes,
+        'nombreEnfants': reservation.nombreEnfants,
+        'enfantsParAge': reservation.enfantsParAge,
+        'totalPersonnes': reservation.totalPersonnes,
+        'date': reservation.date.toIso8601String(),
+        'activity': reservation.activity,
+      };
+
+      print('📤 Create request body: ${json.encode(requestBody)}');
+
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: _getHeaders(),
+        body: json.encode(requestBody),
+      ).timeout(const Duration(seconds: 30));
+
+      print('📡 Create response status: ${response.statusCode}');
+      print('📄 Create response body: ${response.body}');
+
+      if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        
+        if (responseData['success'] == true) {
+          // Successfully created in backend, return the created reservation with backend ID
+          final createdReservationData = responseData['data'];
+          final createdReservation = Reservation.fromJson(createdReservationData);
+          
+          // Add to local lists
+          setState(() {
+            _allReservations.add(createdReservation);
+            _applyFilters();
+          });
+          
+          print('✅ Reservation created successfully with ID: ${createdReservation.id}');
+          return createdReservation;
+        } else {
+          throw Exception(responseData['message'] ?? 'Erreur lors de la création');
+        }
+      } else if (response.statusCode == 401) {
+        // Authentication error
+        TokenManager.clearAll();
+        throw Exception('Session expirée. Veuillez vous reconnecter.');
+      } else if (response.statusCode == 403) {
+        // Permission error
+        throw Exception('Vous n\'avez pas la permission de créer des réservations');
+      } else if (response.statusCode == 400) {
+        // Validation error
+        final responseData = json.decode(response.body);
+        throw Exception(responseData['message'] ?? 'Données invalides');
+      } else {
+        throw Exception('Erreur serveur: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Error creating reservation: $e');
+      rethrow; // Re-throw to handle in the calling method
+    }
+  }
+
   // Delete reservation from backend
   Future<void> _deleteReservationFromBackend(String reservationId) async {
     try {
@@ -333,25 +401,50 @@ class _ReservationsContentState extends State<ReservationsContent> {
 
   // Handle add new reservation
   void _handleAddReservation() {
+    // Check permission first
+    if (!TokenManager.canCreateReservations()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Vous n\'avez pas la permission de créer des réservations'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AddReservationDialog(
-          onReservationAdded: (Reservation newReservation) {
-            // TODO: Send to backend API
-            setState(() {
-              _allReservations.add(newReservation);
-              _applyFilters();
-            });
-            
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${AppStrings.reservationDetails} ${newReservation.nomPrenom} ${AppStrings.reservationAdded}'),
-                backgroundColor: AppColors.success,
-                duration: AppConstants.snackBarDuration,
-              ),
-            );
+          onReservationAdded: (Reservation newReservation) async {
+            try {
+              // Create in backend
+              final createdReservation = await _createReservationInBackend(newReservation);
+              
+              // Show success message
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${AppStrings.reservationDetails} ${createdReservation.nomPrenom} ${AppStrings.reservationAdded}'),
+                    backgroundColor: AppColors.success,
+                    duration: AppConstants.snackBarDuration,
+                  ),
+                );
+              }
+            } catch (e) {
+              // Show error message
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Erreur: ${e.toString()}'),
+                    backgroundColor: AppColors.error,
+                    duration: AppConstants.snackBarDuration,
+                  ),
+                );
+              }
+            }
           },
         );
       },
