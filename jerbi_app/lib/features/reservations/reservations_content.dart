@@ -72,19 +72,10 @@ class _ReservationsContentState extends State<ReservationsContent> {
 
     try {
       final apiUrl = '${_getApiUrl()}/reservations';
-      print('🔗 Loading reservations from: $apiUrl');
-      print('🔐 Authenticated: ${TokenManager.isAuthenticated()}');
-      if (TokenManager.isAuthenticated()) {
-        print('👤 Admin: ${TokenManager.getAdminUsername()}');
-      }
-
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: _getHeaders(),
       ).timeout(const Duration(seconds: 30));
-
-      print('📡 Response status: ${response.statusCode}');
-      print('📄 Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -100,7 +91,6 @@ class _ReservationsContentState extends State<ReservationsContent> {
             _isLoading = false;
           });
           
-          print('✅ Loaded ${_allReservations.length} reservations');
         } else {
           setState(() {
             _errorMessage = responseData['message'] ?? 'Erreur lors du chargement';
@@ -121,7 +111,6 @@ class _ReservationsContentState extends State<ReservationsContent> {
         });
       }
     } catch (e) {
-      print('❌ Error loading reservations: $e');
       setState(() {
         if (e.toString().contains('TimeoutException')) {
           _errorMessage = 'Timeout: Le serveur met trop de temps à répondre';
@@ -140,7 +129,6 @@ class _ReservationsContentState extends State<ReservationsContent> {
   Future<Reservation> _createReservationInBackend(Reservation reservation) async {
     try {
       final apiUrl = '${_getApiUrl()}/reservations';
-      print('➕ Creating reservation: $apiUrl');
 
       final requestBody = {
         'nomPrenom': reservation.nomPrenom,
@@ -154,16 +142,12 @@ class _ReservationsContentState extends State<ReservationsContent> {
         'activity': reservation.activity,
       };
 
-      print('📤 Create request body: ${json.encode(requestBody)}');
 
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: _getHeaders(),
         body: json.encode(requestBody),
       ).timeout(const Duration(seconds: 30));
-
-      print('📡 Create response status: ${response.statusCode}');
-      print('📄 Create response body: ${response.body}');
 
       if (response.statusCode == 201) {
         final responseData = json.decode(response.body);
@@ -179,7 +163,6 @@ class _ReservationsContentState extends State<ReservationsContent> {
             _applyFilters();
           });
           
-          print('✅ Reservation created successfully with ID: ${createdReservation.id}');
           return createdReservation;
         } else {
           throw Exception(responseData['message'] ?? 'Erreur lors de la création');
@@ -199,8 +182,7 @@ class _ReservationsContentState extends State<ReservationsContent> {
         throw Exception('Erreur serveur: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ Error creating reservation: $e');
-      rethrow; // Re-throw to handle in the calling method
+      rethrow; 
     }
   }
 
@@ -208,15 +190,11 @@ class _ReservationsContentState extends State<ReservationsContent> {
   Future<void> _deleteReservationFromBackend(String reservationId) async {
     try {
       final apiUrl = '${_getApiUrl()}/reservations/$reservationId';
-      print('🗑️ Deleting reservation: $apiUrl');
 
       final response = await http.delete(
         Uri.parse(apiUrl),
         headers: _getHeaders(),
       ).timeout(const Duration(seconds: 30));
-
-      print('📡 Delete response status: ${response.statusCode}');
-      print('📄 Delete response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -227,8 +205,7 @@ class _ReservationsContentState extends State<ReservationsContent> {
             _allReservations.removeWhere((r) => r.id == reservationId);
             _applyFilters(); // This will update _filteredReservations
           });
-          
-          print('✅ Reservation deleted successfully');
+
         } else {
           throw Exception(responseData['message'] ?? 'Erreur lors de la suppression');
         }
@@ -247,7 +224,6 @@ class _ReservationsContentState extends State<ReservationsContent> {
         throw Exception('Erreur serveur: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ Error deleting reservation: $e');
       rethrow; // Re-throw to handle in the calling method
     }
   }
@@ -256,7 +232,6 @@ class _ReservationsContentState extends State<ReservationsContent> {
   Future<void> _updateReservationInBackend(Reservation reservation) async {
     try {
       final apiUrl = '${_getApiUrl()}/reservations/${reservation.id}';
-      print('✏️ Updating reservation: $apiUrl');
 
       final requestBody = {
         'nomPrenom': reservation.nomPrenom,
@@ -270,16 +245,12 @@ class _ReservationsContentState extends State<ReservationsContent> {
         'activity': reservation.activity,
       };
 
-      print('📤 Update request body: ${json.encode(requestBody)}');
 
       final response = await http.put(
         Uri.parse(apiUrl),
         headers: _getHeaders(),
         body: json.encode(requestBody),
       ).timeout(const Duration(seconds: 30));
-
-      print('📡 Update response status: ${response.statusCode}');
-      print('📄 Update response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -294,7 +265,6 @@ class _ReservationsContentState extends State<ReservationsContent> {
             _applyFilters();
           });
           
-          print('✅ Reservation updated successfully');
         } else {
           throw Exception(responseData['message'] ?? 'Erreur lors de la mise à jour');
         }
@@ -312,7 +282,6 @@ class _ReservationsContentState extends State<ReservationsContent> {
         throw Exception('Erreur serveur: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ Error updating reservation: $e');
       rethrow; // Re-throw to handle in the calling method
     }
   }

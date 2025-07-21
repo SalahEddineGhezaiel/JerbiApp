@@ -70,7 +70,6 @@ class _LoginPageState extends State<LoginPage> {
     
     try {
       final apiUrl = _getApiUrl();
-      print('🔗 Attempting to connect to: $apiUrl'); // Debug log
       
       // Make API call to your backend
       final response = await http.post(
@@ -83,9 +82,6 @@ class _LoginPageState extends State<LoginPage> {
           'password': _passwordController.text,
         }),
       ).timeout(const Duration(seconds: 10));
-
-      print('📡 Response status: ${response.statusCode}'); // Debug log
-      print('📄 Response body: ${response.body}'); // Debug log
 
       final responseData = json.decode(response.body);
 
@@ -130,7 +126,6 @@ class _LoginPageState extends State<LoginPage> {
         });
       }
     } catch (e) {
-      print('❌ Login error: $e'); // Debug log
       setState(() {
         _isLoading = false;
         if (e.toString().contains('TimeoutException')) {
