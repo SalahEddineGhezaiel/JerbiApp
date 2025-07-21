@@ -313,9 +313,9 @@ const getReservationStats = async (req, res) => {
       ...dateFilter,
       status: 'confirmed'
     });
-    const pendingReservations = await Reservation.countDocuments({
+    const paidReservations = await Reservation.countDocuments({
       ...dateFilter,
-      status: 'pending'
+      status: 'paid'
     });
     const cancelledReservations = await Reservation.countDocuments({
       ...dateFilter,
@@ -364,7 +364,7 @@ const getReservationStats = async (req, res) => {
         overview: {
           total: totalReservations,
           confirmed: confirmedReservations,
-          pending: pendingReservations,
+          paid: paidReservations,
           cancelled: cancelledReservations
         },
         activities: activityStats,
