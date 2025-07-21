@@ -16,7 +16,7 @@ class _StatisticsContentState extends State<StatisticsContent> {
   final Map<String, dynamic> _mockStats = {
     'totalReservations': 156,
     'confirmedReservations': 142,
-    'pendingReservations': 8,
+    'paidReservations': 8,
     'cancelledReservations': 6,
     'totalRevenue': 45600,
     'totalCustomers': 89,
@@ -133,9 +133,9 @@ class _StatisticsContentState extends State<StatisticsContent> {
               width: cardWidth,
               height: cardHeight,
               child: _buildStatCard(
-                AppStrings.pendingReservations,
-                '${_mockStats['pendingReservations']}',
-                Icons.schedule,
+                AppStrings.paidReservations,
+                '${_mockStats['paidReservations']}',
+                Icons.payment,
                 AppColors.chartOrange,
               ),
             ),

@@ -27,7 +27,7 @@ class AppConstants {
   
   // Reservation Status
   static const List<String> reservationStatuses = [
-    'pending',
+    'paid',
     'confirmed',
     'cancelled',
     'completed'
