@@ -8,9 +8,6 @@ class TokenManager {
   /// Save authentication token
   static void saveToken(String token) {
     _authToken = token;
-    if (kDebugMode) {
-      print('🔐 Token saved: ${token.substring(0, 20)}...');
-    }
   }
 
   /// Get current authentication token
@@ -26,10 +23,6 @@ class TokenManager {
   /// Save admin user data
   static void saveAdminData(Map<String, dynamic> adminData) {
     _adminData = adminData;
-    if (kDebugMode) {
-      print('👤 Admin data saved: ${adminData['username'] ?? 'Unknown'}');
-      print('🔑 Permissions: ${getPermissionsSummary()}');
-    }
   }
 
   /// Get current admin data
@@ -51,9 +44,6 @@ class TokenManager {
   static void clearAll() {
     _authToken = null;
     _adminData = null;
-    if (kDebugMode) {
-      print('🗑️ All authentication data cleared');
-    }
   }
 
   /// Get headers with authentication token
