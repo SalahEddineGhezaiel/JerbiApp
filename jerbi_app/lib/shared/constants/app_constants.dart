@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class AppConstants {
   // Available Activities
   static const List<String> activities = [
@@ -59,8 +61,20 @@ class AppConstants {
   static const String logoAsset = 'assets/logo.png';
   static const String backgroundAsset = 'assets/bg1.png';
   
-  // Font Family
-  static const String fontFamily = 'SFPro';
+  // Font Family - Platform specific
+  static String get fontFamily {
+    try {
+      if (Platform.isIOS) {
+        return 'SFPro';
+      } else if (Platform.isAndroid) {
+        return 'GoogleSans';
+      } else {
+        return 'GoogleSans'; // Default for web/desktop
+      }
+    } catch (e) {
+      return 'GoogleSans'; // Fallback
+    }
+  }
   
   // API Endpoints (for future use)
   static const String baseUrl = 'http://localhost:5000/api';

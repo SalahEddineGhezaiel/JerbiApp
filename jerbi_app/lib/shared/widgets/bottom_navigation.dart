@@ -36,14 +36,14 @@ class BottomNavigation extends StatelessWidget {
             children: [
               _buildNavItem(
                 index: 0,
-                icon: Icons.event_note_outlined,
-                activeIcon: Icons.event_note,
+                icon: Icons.calendar_month_outlined,
+                activeIcon: Icons.calendar_month,
                 label: AppStrings.navReservations,
               ),
               _buildNavItem(
                 index: 1,
-                icon: Icons.bar_chart_outlined,
-                activeIcon: Icons.bar_chart,
+                icon: Icons.show_chart_outlined,
+                activeIcon: Icons.show_chart,
                 label: AppStrings.navStatistics,
               ),
               _buildNavItem(

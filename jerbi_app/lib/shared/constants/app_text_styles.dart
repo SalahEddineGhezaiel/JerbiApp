@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
+import 'app_constants.dart';
 
 class AppTextStyles {
-  static const String _fontFamily = 'SFPro';
+  static String get _fontFamily => AppConstants.fontFamily;
   
   // Headings
-  static const TextStyle h1 = TextStyle(
+  static TextStyle get h1 => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 32,
     fontWeight: FontWeight.w700,
@@ -14,7 +15,7 @@ class AppTextStyles {
     height: 1.2,
   );
   
-  static const TextStyle h2 = TextStyle(
+  static TextStyle get h2 => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 28,
     fontWeight: FontWeight.w700,
@@ -23,7 +24,7 @@ class AppTextStyles {
     height: 1.2,
   );
   
-  static const TextStyle h3 = TextStyle(
+  static TextStyle get h3 => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 24,
     fontWeight: FontWeight.w700,
@@ -32,7 +33,7 @@ class AppTextStyles {
     height: 1.3,
   );
   
-  static const TextStyle h4 = TextStyle(
+  static TextStyle get h4 => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 20,
     fontWeight: FontWeight.w700,
@@ -41,7 +42,7 @@ class AppTextStyles {
     height: 1.3,
   );
   
-  static const TextStyle h5 = TextStyle(
+  static TextStyle get h5 => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 18,
     fontWeight: FontWeight.w600,
@@ -50,7 +51,7 @@ class AppTextStyles {
     height: 1.4,
   );
   
-  static const TextStyle h6 = TextStyle(
+  static TextStyle get h6 => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w600,
@@ -60,7 +61,7 @@ class AppTextStyles {
   );
   
   // Body Text
-  static const TextStyle bodyLarge = TextStyle(
+  static TextStyle get bodyLarge => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w400,
@@ -69,7 +70,7 @@ class AppTextStyles {
     height: 1.5,
   );
   
-  static const TextStyle bodyMedium = TextStyle(
+  static TextStyle get bodyMedium => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w400,
@@ -78,7 +79,7 @@ class AppTextStyles {
     height: 1.4,
   );
   
-  static const TextStyle bodySmall = TextStyle(
+  static TextStyle get bodySmall => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w400,
@@ -88,7 +89,7 @@ class AppTextStyles {
   );
   
   // Labels
-  static const TextStyle labelLarge = TextStyle(
+  static TextStyle get labelLarge => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w600,
@@ -97,7 +98,7 @@ class AppTextStyles {
     height: 1.4,
   );
   
-  static const TextStyle labelMedium = TextStyle(
+  static TextStyle get labelMedium => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w500,
@@ -106,7 +107,7 @@ class AppTextStyles {
     height: 1.4,
   );
   
-  static const TextStyle labelSmall = TextStyle(
+  static TextStyle get labelSmall => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 10,
     fontWeight: FontWeight.w500,
@@ -116,7 +117,7 @@ class AppTextStyles {
   );
   
   // Button Text
-  static const TextStyle buttonLarge = TextStyle(
+  static TextStyle get buttonLarge => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 18,
     fontWeight: FontWeight.w600,
@@ -124,7 +125,7 @@ class AppTextStyles {
     height: 1.2,
   );
   
-  static const TextStyle buttonMedium = TextStyle(
+  static TextStyle get buttonMedium => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w600,
@@ -132,7 +133,7 @@ class AppTextStyles {
     height: 1.2,
   );
   
-  static const TextStyle buttonSmall = TextStyle(
+  static TextStyle get buttonSmall => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w600,
@@ -141,7 +142,7 @@ class AppTextStyles {
   );
   
   // Navigation
-  static const TextStyle navLabel = TextStyle(
+  static TextStyle get navLabel => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w400,
@@ -149,7 +150,7 @@ class AppTextStyles {
     height: 1.2,
   );
   
-  static const TextStyle navLabelSelected = TextStyle(
+  static TextStyle get navLabelSelected => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w600,
@@ -158,7 +159,7 @@ class AppTextStyles {
   );
   
   // Form Fields
-  static const TextStyle inputText = TextStyle(
+  static TextStyle get inputText => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w400,
@@ -167,7 +168,7 @@ class AppTextStyles {
     height: 1.4,
   );
   
-  static const TextStyle inputHint = TextStyle(
+  static TextStyle get inputHint => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w400,
@@ -176,7 +177,7 @@ class AppTextStyles {
     height: 1.4,
   );
   
-  static const TextStyle inputLabel = TextStyle(
+  static TextStyle get inputLabel => TextStyle(
     fontFamily: _fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w600,
@@ -186,7 +187,7 @@ class AppTextStyles {
   );
   
   // Special Cases
-  static const TextStyle loginTitle = TextStyle(
+  static TextStyle get loginTitle => TextStyle(
     fontFamily: _fontFamily,
     fontWeight: FontWeight.w700,
     fontSize: 28,
@@ -195,7 +196,7 @@ class AppTextStyles {
     height: 1.2,
   );
   
-  static const TextStyle loginSubtitle = TextStyle(
+  static TextStyle get loginSubtitle => TextStyle(
     fontFamily: _fontFamily,
     fontWeight: FontWeight.w400,
     fontSize: 15,
