@@ -78,9 +78,9 @@ const reservationSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: 'confirmed',
+    default: 'pending',
     enum: {
-      values: ['paid', 'confirmed', 'cancelled', 'completed'],
+      values: ['pending', 'confirmed', 'paid', 'cancelled', 'completed'],
       message: 'Statut non valide'
     }
   },

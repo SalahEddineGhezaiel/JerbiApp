@@ -309,6 +309,10 @@ const getReservationStats = async (req, res) => {
 
     // Get basic stats
     const totalReservations = await Reservation.countDocuments(dateFilter);
+    const pendingReservations = await Reservation.countDocuments({
+      ...dateFilter,
+      status: 'pending'
+    });
     const confirmedReservations = await Reservation.countDocuments({
       ...dateFilter,
       status: 'confirmed'
@@ -363,6 +367,7 @@ const getReservationStats = async (req, res) => {
       data: {
         overview: {
           total: totalReservations,
+          pending: pendingReservations,
           confirmed: confirmedReservations,
           paid: paidReservations,
           cancelled: cancelledReservations
