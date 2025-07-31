@@ -26,7 +26,7 @@ class AppStrings {
   static const String reservationsEmpty = 'Aucune réservation trouvée';
   static const String reservationsEmptySubtitle = 'Les réservations apparaîtront ici';
   static const String searchHint = 'Rechercher';
-  static const String addReservation = 'Nouvelle Réservation';
+  static const String addReservation = 'Ajouter une Réservation';
   static const String editReservation = 'Modifier la Réservation';
   static const String deleteReservation = 'Supprimer la réservation';
   static const String reservationDetails = 'Réservation de';
