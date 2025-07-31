@@ -63,10 +63,13 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
   }
 
   Future<void> _selectDate() async {
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 365)), // Allow past dates for editing
+      initialDate: _selectedDate != null && _selectedDate!.isAfter(tomorrow) 
+          ? _selectedDate! 
+          : tomorrow,
+      firstDate: tomorrow, // Start from tomorrow for editing too
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) {
         return Theme(

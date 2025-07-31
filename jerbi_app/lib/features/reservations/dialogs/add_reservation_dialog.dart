@@ -47,10 +47,11 @@ class _AddReservationDialogState extends State<AddReservationDialog> {
   }
 
   Future<void> _selectDate() async {
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
+      initialDate: tomorrow,
+      firstDate: tomorrow,
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) {
         return Theme(

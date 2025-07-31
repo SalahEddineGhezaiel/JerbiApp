@@ -114,6 +114,14 @@ class ReservationsTable extends StatelessWidget {
                       style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
                       overflow: TextOverflow.ellipsis,
                     ),
+                    SizedBox(height: AppDimensions.spaceXS),
+                    // Date
+                    Text(
+                      reservation.formattedDate,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
               ),

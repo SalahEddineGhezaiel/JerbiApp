@@ -30,6 +30,23 @@ class Reservation {
     '9_12': 'De 9 à 12 ans',
   };
 
+  // Static status options
+  static const Map<String, String> statusLabels = {
+    'pending': 'En attente',
+    'confirmed': 'Confirmée',
+    'paid': 'Payée',
+    'cancelled': 'Annulée',
+    'completed': 'Terminée',
+  };
+
+  static const List<String> statusOptions = [
+    'pending',
+    'confirmed', 
+    'paid',
+    'cancelled',
+    'completed',
+  ];
+
   // Format date for display
   String get formattedDate {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
@@ -38,6 +55,11 @@ class Reservation {
   // Format date with time
   String get formattedDateTime {
     return '${formattedDate} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+  }
+
+  // Get formatted status
+  String get formattedStatus {
+    return statusLabels[status] ?? status ?? 'En attente';
   }
 
   // Get total number of people

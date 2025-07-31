@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../reservations/reservations_content.dart';
 import '../statistics/statistics_content.dart';
 import '../settings/settings_content.dart';
@@ -29,15 +30,22 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
-      bottomNavigationBar: BottomNavigation(
-        selectedIndex: _selectedIndex,
-        onItemSelected: _handleNavigation,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA),
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _pages,
+        ),
+        bottomNavigationBar: BottomNavigation(
+          selectedIndex: _selectedIndex,
+          onItemSelected: _handleNavigation,
+        ),
       ),
     );
   }

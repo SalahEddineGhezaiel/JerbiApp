@@ -95,6 +95,7 @@ class AppStrings {
   // Statistics
   static const String statisticsTitle = 'Statistiques';
   static const String totalReservations = 'Total Réservations';
+  static const String pendingReservations = 'En Attente';
   static const String confirmedReservations = 'Confirmées';
   static const String paidReservations = 'Payées';
   static const String cancelledReservations = 'Annulées';

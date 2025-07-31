@@ -37,6 +37,7 @@ class AppColors {
   static const Color chartOrange = Color(0xFFFF9800);
   static const Color chartRed = Color(0xFFF44336);
   static const Color chartPurple = Color(0xFF9C27B0);
+  static const Color chartYellow = Color(0xFFFFC107);
   
   // Opacity Variants
   static Color primaryWithOpacity(double opacity) => primary.withValues(alpha: opacity);
