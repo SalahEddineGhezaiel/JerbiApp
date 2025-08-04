@@ -157,7 +157,7 @@ Content-Type: application/json
 {
   "username": "staff1",
   "email": "staff1@jerbi-events.com",
-  "password": "SecurePass123",
+  "password": "StaffPass123",
   "permissions": {
     "canCreateAdmins": false,
     "canDeleteAdmins": false,
