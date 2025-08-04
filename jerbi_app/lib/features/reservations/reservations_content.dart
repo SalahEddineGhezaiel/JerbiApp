@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../shared/constants/constants.dart';
 import '../../shared/utils/token_manager.dart';
-import 'widgets/reservations_header.dart';
-import 'widgets/search_filter_section.dart';
-import 'widgets/reservations_table.dart';
+import 'widgets/widgets.dart';
 import 'models/reservation_model.dart';
 import 'dialogs/dialogs.dart';
 
