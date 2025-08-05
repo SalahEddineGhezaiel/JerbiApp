@@ -47,7 +47,7 @@ const createAdmin = async (req, res) => {
     }
 
     // Check if current admin has permission
-    const currentAdmin = await Admin.findById(req.admin.adminId);
+    const currentAdmin = req.admin; // Already fetched in auth middleware
     if (!currentAdmin || (!currentAdmin.permissions.canCreateAdmins && currentAdmin.role !== 'super-admin')) {
       return sendUnauthorized(res, 'Insufficient permissions to create admins');
     }
@@ -83,7 +83,7 @@ const createAdmin = async (req, res) => {
       password,
       role: 'admin',
       permissions: defaultPermissions,
-      createdBy: req.admin.adminId,
+      createdBy: currentAdmin._id,
       isActive: true
     });
 
@@ -124,7 +124,7 @@ const updateAdminPermissions = async (req, res) => {
     }
 
     // Check if current admin has permission
-    const currentAdmin = await Admin.findById(req.admin.adminId);
+    const currentAdmin = req.admin; // Already fetched in auth middleware
     if (!currentAdmin || (!currentAdmin.permissions.canCreateAdmins && currentAdmin.role !== 'super-admin')) {
       return sendUnauthorized(res, 'Insufficient permissions to update admin permissions');
     }
@@ -144,7 +144,7 @@ const updateAdminPermissions = async (req, res) => {
     }
 
     // Prevent self-update unless super-admin
-    if (adminToUpdate._id.toString() === req.admin.adminId && currentAdmin.role !== 'super-admin') {
+    if (adminToUpdate._id.toString() === currentAdmin._id.toString() && currentAdmin.role !== 'super-admin') {
       return sendError(res, 'Cannot update your own permissions');
     }
 
@@ -178,7 +178,7 @@ const updateAdminPermissions = async (req, res) => {
 const deactivateAdmin = async (req, res) => {
   try {
     // Check if current admin has permission
-    const currentAdmin = await Admin.findById(req.admin.adminId);
+    const currentAdmin = req.admin; // Already fetched in auth middleware
     if (!currentAdmin || (!currentAdmin.permissions.canDeleteAdmins && currentAdmin.role !== 'super-admin')) {
       return sendUnauthorized(res, 'Insufficient permissions to deactivate admins');
     }
@@ -226,7 +226,7 @@ const deactivateAdmin = async (req, res) => {
 const activateAdmin = async (req, res) => {
   try {
     // Check if current admin has permission
-    const currentAdmin = await Admin.findById(req.admin.adminId);
+    const currentAdmin = req.admin; // Already fetched in auth middleware
     if (!currentAdmin || (!currentAdmin.permissions.canCreateAdmins && currentAdmin.role !== 'super-admin')) {
       return sendUnauthorized(res, 'Insufficient permissions to activate admins');
     }
