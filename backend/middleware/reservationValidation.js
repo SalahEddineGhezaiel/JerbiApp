@@ -80,7 +80,7 @@ const validateCreateReservation = [
 
   body('status')
     .optional()
-    .isIn(['paid', 'confirmed', 'cancelled', 'completed'])
+    .isIn(['pending', 'confirmed', 'paid', 'cancelled'])
     .withMessage('Statut non valide'),
 
   body('notes')
@@ -194,7 +194,7 @@ const validateUpdateReservation = [
 
   body('status')
     .optional()
-    .isIn(['paid', 'confirmed', 'cancelled', 'completed'])
+    .isIn(['pending', 'confirmed', 'paid', 'cancelled'])
     .withMessage('Statut non valide'),
 
   body('notes')
@@ -261,7 +261,7 @@ const validateReservationQuery = [
 
   query('status')
     .optional()
-    .isIn(['paid', 'confirmed', 'cancelled', 'completed'])
+    .isIn(['pending', 'confirmed', 'paid', 'cancelled'])
     .withMessage('Statut invalide'),
 
   query('activity')
