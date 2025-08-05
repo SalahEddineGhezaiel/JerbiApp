@@ -36,15 +36,13 @@ class Reservation {
     'confirmed': 'Confirmée',
     'paid': 'Payée',
     'cancelled': 'Annulée',
-    'completed': 'Terminée',
   };
 
   static const List<String> statusOptions = [
     'pending',
-    'confirmed', 
+    'confirmed',
     'paid',
     'cancelled',
-    'completed',
   ];
 
   // Format date for display

@@ -241,6 +241,7 @@ class _ReservationsContentState extends State<ReservationsContent> {
         'totalPersonnes': reservation.totalPersonnes,
         'date': reservation.date.toIso8601String(),
         'activity': reservation.activity,
+        'status': reservation.status,
       };
 
 

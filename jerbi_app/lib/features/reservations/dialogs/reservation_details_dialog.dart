@@ -39,6 +39,76 @@ class ReservationDetailsDialog extends StatelessWidget {
     );
   }
 
+  Widget _buildStatusRow(String statusLabel, String? statusValue) {
+    // Get status color based on status value
+    Color statusColor;
+    IconData statusIcon;
+
+    switch (statusValue) {
+      case 'pending':
+        statusColor = AppColors.warning;
+        statusIcon = Icons.schedule;
+        break;
+      case 'confirmed':
+        statusColor = AppColors.info;
+        statusIcon = Icons.check_circle_outline;
+        break;
+      case 'paid':
+        statusColor = AppColors.success;
+        statusIcon = Icons.payment;
+        break;
+      case 'cancelled':
+        statusColor = AppColors.error;
+        statusIcon = Icons.cancel_outlined;
+        break;
+      default:
+        statusColor = AppColors.textSecondary;
+        statusIcon = Icons.help_outline;
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          statusIcon,
+          size: AppDimensions.iconSizeS,
+          color: statusColor,
+        ),
+        SizedBox(width: AppDimensions.spaceM),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Statut', style: AppTextStyles.labelMedium),
+              SizedBox(height: AppDimensions.spaceXS),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingS,
+                  vertical: AppDimensions.paddingXS,
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                  border: Border.all(
+                    color: statusColor.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Text(
+                  statusLabel,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: statusColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   void _showDeleteConfirmation(BuildContext context) {
     showDialog(
       context: context,
@@ -215,8 +285,8 @@ class ReservationDetailsDialog extends StatelessWidget {
                   _buildDetailRow(AppStrings.phoneDetail, reservation.telephone, Icons.phone),
                   SizedBox(height: AppDimensions.spaceL),
                   _buildDetailRow(
-                    AppStrings.adultsDetail, 
-                    '${reservation.nombreAdultes} ${reservation.nombreAdultes > 1 ? AppStrings.adultPlural : AppStrings.adultSingular}', 
+                    AppStrings.adultsDetail,
+                    '${reservation.nombreAdultes} ${reservation.nombreAdultes > 1 ? AppStrings.adultPlural : AppStrings.adultSingular}',
                     Icons.person
                   ),
                   SizedBox(height: AppDimensions.spaceL),
@@ -225,6 +295,8 @@ class ReservationDetailsDialog extends StatelessWidget {
                   _buildDetailRow(AppStrings.activityDetail, reservation.activity, Icons.waves),
                   SizedBox(height: AppDimensions.spaceL),
                   _buildDetailRow(AppStrings.dateDetail, reservation.formattedDate, Icons.calendar_today),
+                  SizedBox(height: AppDimensions.spaceL),
+                  _buildStatusRow(reservation.formattedStatus, reservation.status),
                 ],
               ),
             ),
