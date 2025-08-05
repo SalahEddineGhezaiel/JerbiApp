@@ -59,21 +59,8 @@ class ReservationsTable extends StatelessWidget {
 
                 // Right side - Small add button with text at far right edge
                 if (onAddPressed != null)
-                  ElevatedButton.icon(
+                  ElevatedButton(
                     onPressed: onAddPressed,
-                    icon: Icon(
-                      Icons.add,
-                      size: 14, // Small icon
-                      color: AppColors.textOnPrimary,
-                    ),
-                    label: Text(
-                      'Ajouter',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textOnPrimary,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13, // Small text
-                      ),
-                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.textOnPrimary,
@@ -86,6 +73,25 @@ class ReservationsTable extends StatelessWidget {
                         borderRadius: BorderRadius.circular(AppDimensions.radiusS),
                       ),
                       minimumSize: const Size(60, 28), // Small but wide enough for text
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          size: 14, // Small icon
+                          color: AppColors.textOnPrimary,
+                        ),
+                        const SizedBox(width: 2), // Reduced spacing between icon and text
+                        Text(
+                          'Ajouter',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textOnPrimary,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13, // Small text
+                          ),
+                        ),
+                      ],
                     ),
                   ),
               ],
