@@ -5,17 +5,21 @@ import '../models/reservation_model.dart';
 class ReservationsTable extends StatelessWidget {
   final List<Reservation> reservations;
   final Function(Reservation) onViewDetails;
+  final VoidCallback? onAddPressed;
 
   const ReservationsTable({
     super.key,
     required this.reservations,
     required this.onViewDetails,
+    this.onAddPressed,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: AppDimensions.marginXL),
+      margin: EdgeInsets.symmetric(horizontal: AppDimensions.marginXL,
+      vertical: AppDimensions.paddingS,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppDimensions.radiusL),
@@ -33,7 +37,7 @@ class ReservationsTable extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(
               horizontal: AppDimensions.paddingXL, 
-              vertical: AppDimensions.paddingL
+              vertical: AppDimensions.paddingS
             ),
             decoration: BoxDecoration(
               color: AppColors.background,
@@ -44,13 +48,46 @@ class ReservationsTable extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Expanded(
-                  child: Text(
-                    AppStrings.reservationsTitle,
-                    style: AppTextStyles.labelMedium.copyWith(color: AppColors.secondary),
-                  ),
+                // Left side - Reservations text
+                Text(
+                  AppStrings.reservationsTitle,
+                  style: AppTextStyles.labelMedium.copyWith(color: AppColors.secondary),
                 ),
-                SizedBox(width: AppDimensions.iconButtonSize), // Space for eye icon
+
+                // Spacer to push button to far right
+                const Spacer(),
+
+                // Right side - Small add button with text at far right edge
+                if (onAddPressed != null)
+                  ElevatedButton.icon(
+                    onPressed: onAddPressed,
+                    icon: Icon(
+                      Icons.add,
+                      size: 14, // Small icon
+                      color: AppColors.textOnPrimary,
+                    ),
+                    label: Text(
+                      'Ajouter',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textOnPrimary,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 13, // Small text
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.textOnPrimary,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                      ),
+                      minimumSize: const Size(60, 28), // Small but wide enough for text
+                    ),
+                  ),
               ],
             ),
           ),
@@ -80,54 +117,55 @@ class ReservationsTable extends StatelessWidget {
   }
 
   Widget _buildReservationRow(Reservation reservation) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => onViewDetails(reservation),
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingXL, 
-            vertical: AppDimensions.paddingL
-          ),
-          child: Row(
-            children: [
-              // Client Information
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Client Name
-                    Text(
-                      reservation.nomPrenom,
-                      style: AppTextStyles.h6.copyWith(color: AppColors.textPrimary),
-                    ),
-                    SizedBox(height: AppDimensions.spaceXS),
-                    // Phone Number
-                    Text(
-                      reservation.telephone,
-                      style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
-                    ),
-                    SizedBox(height: AppDimensions.spaceXS / 2),
-                    // Activity
-                    Text(
-                      reservation.activity,
-                      style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: AppDimensions.spaceXS),
-                    // Date
-                    Text(
-                      reservation.formattedDate,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: AppDimensions.paddingXL,
+        vertical: AppDimensions.paddingL
+      ),
+      child: Row(
+        children: [
+          // Client Information
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Client Name
+                Text(
+                  reservation.nomPrenom,
+                  style: AppTextStyles.h6.copyWith(color: AppColors.textPrimary),
                 ),
-              ),
-              
-              // Eye Icon
-              Container(
+                SizedBox(height: AppDimensions.spaceXS),
+                // Phone Number
+                Text(
+                  reservation.telephone,
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                ),
+                SizedBox(height: AppDimensions.spaceXS / 2),
+                // Activity
+                Text(
+                  reservation.activity,
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: AppDimensions.spaceXS),
+                // Date
+                Text(
+                  reservation.formattedDate,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Clickable Eye Icon
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => onViewDetails(reservation),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+              child: Container(
                 width: AppDimensions.iconButtonSizeS,
                 height: AppDimensions.iconButtonSizeS,
                 decoration: BoxDecoration(
@@ -140,9 +178,9 @@ class ReservationsTable extends StatelessWidget {
                   size: AppDimensions.iconSizeXS,
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

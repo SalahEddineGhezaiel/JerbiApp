@@ -579,9 +579,7 @@ class _ReservationsContentState extends State<ReservationsContent> {
         child: Column(
           children: [
             // Header Section
-            ReservationsHeader(
-              onAddPressed: _handleAddReservation,
-            ),
+            const ReservationsHeader(),
             
             // Search & Filter Section
             SearchFilterSection(
@@ -601,6 +599,7 @@ class _ReservationsContentState extends State<ReservationsContent> {
                           child: ReservationsTable(
                             reservations: _filteredReservations,
                             onViewDetails: _handleViewDetails,
+                            onAddPressed: _handleAddReservation,
                           ),
                         ),
             ),
