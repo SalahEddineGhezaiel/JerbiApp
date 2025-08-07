@@ -221,13 +221,7 @@ class _SettingsContentState extends State<SettingsContent> {
           title: AppStrings.manageAdmins,
           subtitle: AppStrings.manageAdminsSubtitle,
           onTap: () => _showUserManagementPage(),
-        ),
-        _buildSettingsTile(
-          icon: Icons.admin_panel_settings_outlined,
-          title: AppStrings.permissions,
-          subtitle: AppStrings.permissionsSubtitle,
-          onTap: () => _showPermissionsPage(),
-        ),
+        )
       ],
     );
   }
