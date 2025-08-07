@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../shared/constants/constants.dart';
 import '../../shared/widgets/page_header.dart';
+import '../../shared/utils/token_manager.dart';
+import '../../shared/services/admin_service.dart';
 
 class SettingsContent extends StatefulWidget {
   const SettingsContent({super.key});
@@ -10,6 +12,56 @@ class SettingsContent extends StatefulWidget {
 }
 
 class _SettingsContentState extends State<SettingsContent> {
+  bool _isLoadingProfile = false;
+  String? _adminUsername;
+  String? _adminEmail;
+  String? _adminRole;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAdminProfile();
+  }
+
+  /// Load admin profile from backend
+  Future<void> _loadAdminProfile() async {
+    setState(() {
+      _isLoadingProfile = true;
+    });
+
+    try {
+      // Try to get from cache first
+      _adminUsername = TokenManager.getAdminUsername();
+      _adminEmail = TokenManager.getAdminEmail();
+      _adminRole = TokenManager.getAdminRole();
+
+      // If we have cached data, update UI immediately
+      if (_adminUsername != null && _adminEmail != null && _adminRole != null) {
+        setState(() {
+          _isLoadingProfile = false;
+        });
+      }
+
+      // Refresh from backend
+      await AdminService.refreshAdminProfile();
+
+      // Update with fresh data
+      setState(() {
+        _adminUsername = TokenManager.getAdminUsername();
+        _adminEmail = TokenManager.getAdminEmail();
+        _adminRole = TokenManager.getAdminRole();
+        _isLoadingProfile = false;
+      });
+    } catch (e) {
+      // If backend fails, use cached data if available
+      setState(() {
+        _adminUsername = TokenManager.getAdminUsername() ?? 'Admin';
+        _adminEmail = TokenManager.getAdminEmail() ?? 'admin@jerbi-events.com';
+        _adminRole = TokenManager.getAdminRole() ?? 'admin';
+        _isLoadingProfile = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,36 +120,91 @@ class _SettingsContentState extends State<SettingsContent> {
             width: AppDimensions.profileAvatarSize,
             height: AppDimensions.profileAvatarSize,
             decoration: BoxDecoration(
-              color: AppColors.primaryWithOpacity(0.1),
+              color: _adminRole == 'super-admin'
+                  ? AppColors.success.withValues(alpha: 0.1)
+                  : AppColors.primaryWithOpacity(0.1),
               borderRadius: BorderRadius.circular(AppDimensions.profileAvatarSize / 2),
             ),
             child: Icon(
-              Icons.person,
-              color: AppColors.primary,
+              _adminRole == 'super-admin' ? Icons.admin_panel_settings : Icons.person,
+              color: _adminRole == 'super-admin' ? AppColors.success : AppColors.primary,
               size: AppDimensions.iconSize + 6,
             ),
           ),
           SizedBox(width: AppDimensions.spaceL),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppStrings.adminProfile,
-                  style: AppTextStyles.h5.copyWith(color: AppColors.primary),
-                ),
-                SizedBox(height: AppDimensions.spaceXS),
-                Text(
-                  AppStrings.adminEmail,
-                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
-                ),
-                SizedBox(height: AppDimensions.spaceXS),
-                Text(
-                  AppStrings.adminRole,
-                  style: AppTextStyles.labelMedium.copyWith(color: AppColors.success),
-                ),
-              ],
-            ),
+            child: _isLoadingProfile
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 20,
+                        width: 120,
+                        decoration: BoxDecoration(
+                          color: AppColors.border,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      SizedBox(height: AppDimensions.spaceXS),
+                      Container(
+                        height: 16,
+                        width: 180,
+                        decoration: BoxDecoration(
+                          color: AppColors.border,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      SizedBox(height: AppDimensions.spaceXS),
+                      Container(
+                        height: 14,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: AppColors.border,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _adminUsername ?? 'Admin',
+                        style: AppTextStyles.h5.copyWith(color: AppColors.primary),
+                      ),
+                      SizedBox(height: AppDimensions.spaceXS),
+                      Text(
+                        _adminEmail ?? 'admin@jerbi-events.com',
+                        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                      ),
+                      SizedBox(height: AppDimensions.spaceS),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppDimensions.paddingS,
+                          vertical: AppDimensions.paddingXS,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _adminRole == 'super-admin'
+                              ? AppColors.success.withValues(alpha: 0.1)
+                              : AppColors.info.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusS),
+                          border: Border.all(
+                            color: _adminRole == 'super-admin'
+                                ? AppColors.success.withValues(alpha: 0.3)
+                                : AppColors.info.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          _adminRole == 'super-admin' ? 'Super Admin' : 'Admin',
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: _adminRole == 'super-admin' ? AppColors.success : AppColors.info,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
           ),
         ],
       ),
@@ -156,7 +263,6 @@ class _SettingsContentState extends State<SettingsContent> {
         _buildSettingsTile(
           icon: Icons.logout_outlined,
           title: AppStrings.logout,
-          subtitle: AppStrings.logoutSubtitle,
           titleColor: AppColors.error,
           onTap: () => _showLogoutDialog(),
         ),

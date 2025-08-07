@@ -35,6 +35,11 @@ class TokenManager {
     return _adminData?['username'];
   }
 
+  /// Get admin email
+  static String? getAdminEmail() {
+    return _adminData?['email'];
+  }
+
   /// Get admin role
   static String? getAdminRole() {
     return _adminData?['role'];

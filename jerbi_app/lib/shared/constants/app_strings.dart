@@ -153,7 +153,6 @@ class AppStrings {
   static const String helpSupport = 'Aide et support';
   static const String helpSupportSubtitle = 'Documentation et contact';
   static const String logout = 'Se déconnecter';
-  static const String logoutSubtitle = 'Quitter l\'application';
   static const String logoutConfirmation = 'Êtes-vous sûr de vouloir vous déconnecter ?';
   
   // Placeholder Messages
