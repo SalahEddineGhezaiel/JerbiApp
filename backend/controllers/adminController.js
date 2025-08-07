@@ -263,7 +263,7 @@ const activateAdmin = async (req, res) => {
  */
 const getAdminProfile = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.admin.adminId)
+    const admin = await Admin.findById(req.admin._id)
       .select('-password')
       .populate('createdBy', 'username email');
 
