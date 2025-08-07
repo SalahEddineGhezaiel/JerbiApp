@@ -9,14 +9,14 @@ const { sendSuccess, sendError, sendServerError, sendUnauthorized, sendNotFound 
 const getAllAdmins = async (req, res) => {
   try {
     // Check if current admin has permission
-    const currentAdmin = await Admin.findById(req.admin.adminId);
+    const currentAdmin = req.admin; // Already fetched in auth middleware
     if (!currentAdmin || (!currentAdmin.permissions.canCreateAdmins && currentAdmin.role !== 'super-admin')) {
       return sendUnauthorized(res, 'Insufficient permissions to view admins');
     }
 
     // Get all admins except the current one
     const admins = await Admin.find({
-      _id: { $ne: req.admin.adminId },
+      _id: { $ne: currentAdmin._id },
       role: { $ne: 'super-admin' }
     })
     .select('-password')
@@ -197,7 +197,7 @@ const deactivateAdmin = async (req, res) => {
     }
 
     // Prevent self-deactivation
-    if (adminToDeactivate._id.toString() === req.admin.adminId) {
+    if (adminToDeactivate._id.toString() === currentAdmin._id.toString()) {
       return sendError(res, 'Cannot deactivate yourself');
     }
 
