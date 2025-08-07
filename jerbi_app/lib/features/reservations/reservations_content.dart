@@ -30,6 +30,7 @@ class _ReservationsContentState extends State<ReservationsContent> {
   DateTime? _selectedFilterStartDate;
   DateTime? _selectedFilterEndDate;
   String? _selectedFilterActivity;
+  String? _selectedFilterStatus;
   bool _hasActiveFilters = false;
 
   @override
@@ -341,8 +342,15 @@ class _ReservationsContentState extends State<ReservationsContent> {
           .toList();
     }
 
+    // Apply status filter
+    if (_selectedFilterStatus != null) {
+      filtered = filtered
+          .where((reservation) => reservation.status == _selectedFilterStatus)
+          .toList();
+    }
+
     _filteredReservations = filtered;
-    _hasActiveFilters = _selectedFilterStartDate != null || _selectedFilterActivity != null;
+    _hasActiveFilters = _selectedFilterStartDate != null || _selectedFilterActivity != null || _selectedFilterStatus != null;
   }
 
   // Handle filter button press
@@ -354,11 +362,13 @@ class _ReservationsContentState extends State<ReservationsContent> {
           initialStartDate: _selectedFilterStartDate,
           initialEndDate: _selectedFilterEndDate,
           initialActivity: _selectedFilterActivity,
-          onApplyFilters: (DateTime? startDate, DateTime? endDate, String? activity) {
+          initialStatus: _selectedFilterStatus,
+          onApplyFilters: (DateTime? startDate, DateTime? endDate, String? activity, String? status) {
             setState(() {
               _selectedFilterStartDate = startDate;
               _selectedFilterEndDate = endDate;
               _selectedFilterActivity = activity;
+              _selectedFilterStatus = status;
               _applyFilters();
             });
           },
@@ -375,7 +385,7 @@ class _ReservationsContentState extends State<ReservationsContent> {
         const SnackBar(
           content: Text('Vous n\'avez pas la permission de créer des réservations'),
           backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 1),
         ),
       );
       return;
@@ -441,7 +451,7 @@ class _ReservationsContentState extends State<ReservationsContent> {
         const SnackBar(
           content: Text('Vous n\'avez pas la permission de modifier des réservations'),
           backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 1),
         ),
       );
       return;

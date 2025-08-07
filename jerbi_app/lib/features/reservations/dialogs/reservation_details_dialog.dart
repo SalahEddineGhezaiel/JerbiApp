@@ -215,7 +215,7 @@ class ReservationDetailsDialog extends StatelessWidget {
                               const SnackBar(
                                 content: Text('Vous n\'avez pas la permission de modifier des réservations'),
                                 backgroundColor: Colors.red,
-                                duration: Duration(seconds: 3),
+                                duration: Duration(seconds: 1),
                               ),
                             );
                             return;
@@ -248,7 +248,7 @@ class ReservationDetailsDialog extends StatelessWidget {
                               const SnackBar(
                                 content: Text('Vous ne pouvez pas supprimer les réservations'),
                                 backgroundColor: Colors.red,
-                                duration: Duration(seconds: 3),
+                                duration: Duration(seconds: 1),
                               ),
                             );
                             return;

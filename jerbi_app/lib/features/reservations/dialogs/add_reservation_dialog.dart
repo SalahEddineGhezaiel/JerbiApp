@@ -24,7 +24,12 @@ class _AddReservationDialogState extends State<AddReservationDialog> {
   
   DateTime? _selectedDate;
   String? _selectedActivity;
+  String _selectedStatus = 'pending'; // Default to pending
   bool _isLoading = false;
+
+  // Validation error messages
+  String? _dateError;
+  String? _activityError;
 
   // Age ranges for children
   final Map<String, int> _enfantsParAge = {
@@ -76,6 +81,7 @@ class _AddReservationDialogState extends State<AddReservationDialog> {
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
+        _dateError = null; // Clear error when user selects a date
       });
     }
   }
@@ -85,27 +91,32 @@ class _AddReservationDialogState extends State<AddReservationDialog> {
   }
 
   Future<void> _handleConfirm() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    // Clear previous errors
+    setState(() {
+      _dateError = null;
+      _activityError = null;
+    });
 
+    // Validate form fields
+    bool isValid = _formKey.currentState!.validate();
+
+    // Validate date
     if (_selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppStrings.dateRequired),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
+      setState(() {
+        _dateError = AppStrings.dateRequired;
+      });
+      isValid = false;
     }
 
+    // Validate activity
     if (_selectedActivity == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppStrings.activityRequired),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      setState(() {
+        _activityError = AppStrings.activityRequired;
+      });
+      isValid = false;
+    }
+
+    if (!isValid) {
       return;
     }
 
@@ -129,6 +140,7 @@ class _AddReservationDialogState extends State<AddReservationDialog> {
       enfantsParAge: Map<String, int>.from(_enfantsParAge),
       date: _selectedDate!,
       activity: _selectedActivity!,
+      status: _selectedStatus,
     );
 
     widget.onReservationAdded(newReservation);
@@ -281,32 +293,122 @@ class _AddReservationDialogState extends State<AddReservationDialog> {
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(
-              vertical: AppDimensions.paddingL, 
+              vertical: AppDimensions.paddingL,
               horizontal: AppDimensions.paddingL
             ),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(
+                color: _dateError != null ? AppColors.error : AppColors.border,
+                width: _dateError != null ? 2 : 1,
+              ),
             ),
             child: Row(
               children: [
-                Icon(Icons.calendar_today, color: AppColors.secondary),
+                Icon(
+                  Icons.calendar_today,
+                  color: AppColors.secondary,
+                ),
                 SizedBox(width: AppDimensions.spaceM),
                 Text(
                   _selectedDate != null
                       ? DateFormatter.formatDate(_selectedDate!)
                       : AppStrings.dateHint,
-                  style: _selectedDate != null 
-                      ? AppTextStyles.inputText 
+                  style: _selectedDate != null
+                      ? AppTextStyles.inputText
                       : AppTextStyles.inputHint,
                 ),
               ],
             ),
           ),
         ),
+        if (_dateError != null) ...[
+          SizedBox(height: AppDimensions.spaceXS),
+          Text(
+            _dateError!,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.error,
+            ),
+          ),
+        ],
       ],
     );
+  }
+
+  Widget _buildStatusDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Statut', style: AppTextStyles.inputLabel),
+        SizedBox(height: AppDimensions.spaceS),
+        DropdownButtonFormField<String>(
+          value: _selectedStatus,
+          isExpanded: true,
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedStatus = newValue ?? 'pending';
+            });
+          },
+          decoration: InputDecoration(
+            prefixIcon: _getStatusIcon(_selectedStatus),
+            filled: true,
+            fillColor: AppColors.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+              borderSide: BorderSide(color: AppColors.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+              borderSide: BorderSide(color: AppColors.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+              borderSide: BorderSide(color: AppColors.primary, width: 2),
+            ),
+          ),
+          style: AppTextStyles.inputText,
+          items: Reservation.statusOptions.map<DropdownMenuItem<String>>((String status) {
+            return DropdownMenuItem<String>(
+              value: status,
+              child: Text(
+                Reservation.statusLabels[status] ?? status,
+                style: AppTextStyles.inputText,
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _getStatusIcon(String status) {
+    Color statusColor;
+    IconData statusIcon;
+
+    switch (status) {
+      case 'pending':
+        statusColor = AppColors.warning;
+        statusIcon = Icons.schedule;
+        break;
+      case 'confirmed':
+        statusColor = AppColors.info;
+        statusIcon = Icons.check_circle_outline;
+        break;
+      case 'paid':
+        statusColor = AppColors.success;
+        statusIcon = Icons.payment;
+        break;
+      case 'cancelled':
+        statusColor = AppColors.error;
+        statusIcon = Icons.cancel_outlined;
+        break;
+      default:
+        statusColor = AppColors.textSecondary;
+        statusIcon = Icons.help_outline;
+    }
+
+    return Icon(statusIcon, color: statusColor, size: 16);
   }
 
   Widget _buildActivityDropdown() {
@@ -321,21 +423,31 @@ class _AddReservationDialogState extends State<AddReservationDialog> {
           onChanged: (String? newValue) {
             setState(() {
               _selectedActivity = newValue;
+              _activityError = null; // Clear error when user selects
             });
           },
           decoration: InputDecoration(
             hintText: AppStrings.activityHint,
-            prefixIcon: Icon(Icons.waves, color: AppColors.secondary),
+            prefixIcon: Icon(
+              Icons.waves,
+              color: AppColors.secondary,
+            ),
             hintStyle: AppTextStyles.inputHint,
             filled: true,
             fillColor: AppColors.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-              borderSide: BorderSide(color: AppColors.border),
+              borderSide: BorderSide(
+                color: _activityError != null ? AppColors.error : AppColors.border,
+                width: _activityError != null ? 2 : 1,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-              borderSide: BorderSide(color: AppColors.border),
+              borderSide: BorderSide(
+                color: _activityError != null ? AppColors.error : AppColors.border,
+                width: _activityError != null ? 2 : 1,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusM),
@@ -361,6 +473,15 @@ class _AddReservationDialogState extends State<AddReservationDialog> {
             );
           }).toList(),
         ),
+        if (_activityError != null) ...[
+          SizedBox(height: AppDimensions.spaceXS),
+          Text(
+            _activityError!,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.error,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -472,6 +593,9 @@ class _AddReservationDialogState extends State<AddReservationDialog> {
                       SizedBox(height: AppDimensions.spaceL),
 
                       _buildActivityDropdown(),
+                      SizedBox(height: AppDimensions.spaceL),
+
+                      _buildStatusDropdown(),
                     ],
                   ),
                 ),

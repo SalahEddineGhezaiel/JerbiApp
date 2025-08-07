@@ -10,9 +10,6 @@ class SettingsContent extends StatefulWidget {
 }
 
 class _SettingsContentState extends State<SettingsContent> {
-  bool _notificationsEnabled = true;
-  bool _darkModeEnabled = false;
-  String _selectedLanguage = AppStrings.languageFrench;
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +24,6 @@ class _SettingsContentState extends State<SettingsContent> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildProfileSection(),
-                  SizedBox(height: AppDimensions.spaceXXL),
-                  _buildPreferencesSection(),
                   SizedBox(height: AppDimensions.spaceXXL),
                   _buildUserManagementSection(),
                   SizedBox(height: AppDimensions.spaceXXL),
@@ -49,19 +44,6 @@ class _SettingsContentState extends State<SettingsContent> {
       title: AppStrings.profileSection,
       children: [
         _buildProfileCard(),
-        SizedBox(height: AppDimensions.spaceL),
-        _buildSettingsTile(
-          icon: Icons.edit_outlined,
-          title: AppStrings.editProfile,
-          subtitle: AppStrings.editProfileSubtitle,
-          onTap: () => _showEditProfileDialog(),
-        ),
-        _buildSettingsTile(
-          icon: Icons.security_outlined,
-          title: AppStrings.security,
-          subtitle: AppStrings.securitySubtitle,
-          onTap: () => _showChangePasswordDialog(),
-        ),
       ],
     );
   }
@@ -122,43 +104,6 @@ class _SettingsContentState extends State<SettingsContent> {
     );
   }
 
-  Widget _buildPreferencesSection() {
-    return _buildSection(
-      title: AppStrings.preferencesSection,
-      children: [
-        _buildSwitchTile(
-          icon: Icons.notifications_outlined,
-          title: AppStrings.notifications,
-          subtitle: AppStrings.notificationsSubtitle,
-          value: _notificationsEnabled,
-          onChanged: (value) {
-            setState(() {
-              _notificationsEnabled = value;
-            });
-          },
-        ),
-        _buildSwitchTile(
-          icon: Icons.dark_mode_outlined,
-          title: AppStrings.darkMode,
-          subtitle: AppStrings.darkModeSubtitle,
-          value: _darkModeEnabled,
-          onChanged: (value) {
-            setState(() {
-              _darkModeEnabled = value;
-            });
-          },
-        ),
-        _buildSettingsTile(
-          icon: Icons.language_outlined,
-          title: AppStrings.language,
-          subtitle: _selectedLanguage,
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => _showLanguageDialog(),
-        ),
-      ],
-    );
-  }
-
   Widget _buildUserManagementSection() {
     return _buildSection(
       title: AppStrings.userManagementSection,
@@ -195,12 +140,6 @@ class _SettingsContentState extends State<SettingsContent> {
           subtitle: AppStrings.backupSubtitle,
           onTap: () => _showBackupDialog(),
         ),
-        _buildSettingsTile(
-          icon: Icons.restore_outlined,
-          title: AppStrings.restore,
-          subtitle: AppStrings.restoreSubtitle,
-          onTap: () => _showRestoreDialog(),
-        ),
       ],
     );
   }
@@ -213,12 +152,6 @@ class _SettingsContentState extends State<SettingsContent> {
           icon: Icons.info_outlined,
           title: AppStrings.appVersionLabel,
           subtitle: AppStrings.appVersion,
-        ),
-        _buildSettingsTile(
-          icon: Icons.help_outline,
-          title: AppStrings.helpSupport,
-          subtitle: AppStrings.helpSupportSubtitle,
-          onTap: () => _showHelpDialog(),
         ),
         _buildSettingsTile(
           icon: Icons.logout_outlined,
@@ -298,63 +231,7 @@ class _SettingsContentState extends State<SettingsContent> {
     );
   }
 
-  Widget _buildSwitchTile({
-    required IconData icon,
-    required String title,
-    String? subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return ListTile(
-      leading: Container(
-        padding: EdgeInsets.all(AppDimensions.paddingS),
-        decoration: BoxDecoration(
-          color: AppColors.primaryWithOpacity(0.1),
-          borderRadius: BorderRadius.circular(AppDimensions.radiusS),
-        ),
-        child: Icon(
-          icon, 
-          color: AppColors.primary, 
-          size: AppDimensions.iconSizeS
-        ),
-      ),
-      title: Text(
-        title,
-        style: AppTextStyles.h6.copyWith(color: AppColors.textPrimary),
-      ),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle,
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
-            )
-          : null,
-      trailing: Switch(
-        value: value,
-        onChanged: onChanged,
-        activeColor: AppColors.primary,
-      ),
-    );
-  }
-
   // Dialog methods (placeholder implementations)
-  void _showEditProfileDialog() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppStrings.editProfilePlaceholder)),
-    );
-  }
-
-  void _showChangePasswordDialog() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppStrings.changePasswordPlaceholder)),
-    );
-  }
-
-  void _showLanguageDialog() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppStrings.languageSelectionPlaceholder)),
-    );
-  }
-
   void _showUserManagementPage() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(AppStrings.userManagementPlaceholder)),
@@ -376,18 +253,6 @@ class _SettingsContentState extends State<SettingsContent> {
   void _showBackupDialog() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(AppStrings.backupPlaceholder)),
-    );
-  }
-
-  void _showRestoreDialog() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppStrings.restorePlaceholder)),
-    );
-  }
-
-  void _showHelpDialog() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppStrings.helpPlaceholder)),
     );
   }
 

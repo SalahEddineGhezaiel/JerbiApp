@@ -6,13 +6,15 @@ class FilterReservationsDialog extends StatefulWidget {
   final DateTime? initialStartDate;
   final DateTime? initialEndDate;
   final String? initialActivity;
-  final Function(DateTime?, DateTime?, String?) onApplyFilters;
+  final String? initialStatus;
+  final Function(DateTime?, DateTime?, String?, String?) onApplyFilters;
 
   const FilterReservationsDialog({
     super.key,
     this.initialStartDate,
     this.initialEndDate,
     this.initialActivity,
+    this.initialStatus,
     required this.onApplyFilters,
   });
 
@@ -24,6 +26,7 @@ class _FilterReservationsDialogState extends State<FilterReservationsDialog> {
   DateTime? _startDate;
   DateTime? _endDate;
   String? _selectedActivity;
+  String? _selectedStatus;
   bool _isDateRange = false;
 
   @override
@@ -32,6 +35,7 @@ class _FilterReservationsDialogState extends State<FilterReservationsDialog> {
     _startDate = widget.initialStartDate;
     _endDate = widget.initialEndDate;
     _selectedActivity = widget.initialActivity;
+    _selectedStatus = widget.initialStatus;
     _isDateRange = widget.initialStartDate != null && widget.initialEndDate != null;
   }
 
@@ -124,6 +128,7 @@ class _FilterReservationsDialogState extends State<FilterReservationsDialog> {
       _startDate = null;
       _endDate = null;
       _selectedActivity = null;
+      _selectedStatus = null;
       _isDateRange = false;
     });
   }
@@ -131,13 +136,13 @@ class _FilterReservationsDialogState extends State<FilterReservationsDialog> {
   void _applyFilters() {
     DateTime? startDate = _startDate;
     DateTime? endDate = _isDateRange ? _endDate : null;
-    
-    widget.onApplyFilters(startDate, endDate, _selectedActivity);
+
+    widget.onApplyFilters(startDate, endDate, _selectedActivity, _selectedStatus);
     Navigator.of(context).pop();
   }
 
   bool get _hasActiveFilters {
-    return _startDate != null || _selectedActivity != null;
+    return _startDate != null || _selectedActivity != null || _selectedStatus != null;
   }
 
   Widget _buildDateFilterSection() {
@@ -348,6 +353,109 @@ class _FilterReservationsDialogState extends State<FilterReservationsDialog> {
     );
   }
 
+  Widget _buildStatusFilterSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Filtrer par statut',
+          style: AppTextStyles.h6.copyWith(color: AppColors.primary),
+        ),
+        SizedBox(height: AppDimensions.spaceM),
+        DropdownButtonFormField<String>(
+          value: _selectedStatus,
+          isExpanded: true,
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedStatus = newValue;
+            });
+          },
+          decoration: InputDecoration(
+            hintText: 'Tous les statuts',
+            prefixIcon: _getStatusIcon(_selectedStatus),
+            hintStyle: AppTextStyles.inputHint,
+            filled: true,
+            fillColor: AppColors.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+              borderSide: BorderSide(color: AppColors.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+              borderSide: BorderSide(color: AppColors.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+              borderSide: BorderSide(color: AppColors.primary, width: AppDimensions.borderWidthThick),
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              vertical: AppDimensions.paddingL,
+              horizontal: AppDimensions.paddingL,
+            ),
+          ),
+          style: AppTextStyles.inputText,
+          items: [
+            DropdownMenuItem<String>(
+              value: null,
+              child: Text(
+                'Tous les statuts',
+                style: AppTextStyles.inputText.copyWith(color: AppColors.textSecondary),
+              ),
+            ),
+            ...['pending', 'confirmed', 'paid', 'cancelled'].map<DropdownMenuItem<String>>((String status) {
+              return DropdownMenuItem<String>(
+                value: status,
+                child: Text(
+                  _getStatusLabel(status),
+                  style: AppTextStyles.inputText,
+                ),
+              );
+            }),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _getStatusIcon(String? status) {
+    Color statusColor;
+    IconData statusIcon;
+
+    switch (status) {
+      case 'pending':
+        statusColor = AppColors.warning;
+        statusIcon = Icons.schedule;
+        break;
+      case 'confirmed':
+        statusColor = AppColors.info;
+        statusIcon = Icons.check_circle_outline;
+        break;
+      case 'paid':
+        statusColor = AppColors.success;
+        statusIcon = Icons.payment;
+        break;
+      case 'cancelled':
+        statusColor = AppColors.error;
+        statusIcon = Icons.cancel_outlined;
+        break;
+      default:
+        statusColor = AppColors.textSecondary;
+        statusIcon = Icons.info_outline;
+    }
+
+    return Icon(statusIcon, color: statusColor, size: 20);
+  }
+
+  String _getStatusLabel(String status) {
+    const statusLabels = {
+      'pending': 'En attente',
+      'confirmed': 'Confirmée',
+      'paid': 'Payée',
+      'cancelled': 'Annulée',
+    };
+    return statusLabels[status] ?? status;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -402,6 +510,8 @@ class _FilterReservationsDialogState extends State<FilterReservationsDialog> {
                     _buildDateFilterSection(),
                     SizedBox(height: AppDimensions.spaceXXL),
                     _buildActivityFilterSection(),
+                    SizedBox(height: AppDimensions.spaceXXL),
+                    _buildStatusFilterSection(),
                   ],
                 ),
               ),

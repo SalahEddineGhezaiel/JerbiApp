@@ -26,6 +26,7 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
   
   DateTime? _selectedDate;
   String? _selectedActivity;
+  String _selectedStatus = 'pending';
   bool _isLoading = false;
 
   // Age ranges for children
@@ -41,6 +42,7 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
     _nombreAdultesController.text = widget.reservation.nombreAdultes.toString();
     _selectedDate = widget.reservation.date;
     _selectedActivity = widget.reservation.activity;
+    _selectedStatus = widget.reservation.status ?? 'pending';
     _enfantsParAge = Map<String, int>.from(widget.reservation.enfantsParAge);
     
     // Ensure all age ranges are present
@@ -144,6 +146,7 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
       enfantsParAge: Map<String, int>.from(_enfantsParAge),
       date: _selectedDate!,
       activity: _selectedActivity!,
+      status: _selectedStatus,
     );
 
     widget.onReservationUpdated(updatedReservation);
@@ -324,6 +327,81 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
     );
   }
 
+  Widget _buildStatusDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Statut', style: AppTextStyles.inputLabel),
+        SizedBox(height: AppDimensions.spaceS),
+        DropdownButtonFormField<String>(
+          value: _selectedStatus,
+          isExpanded: true,
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedStatus = newValue ?? 'pending';
+            });
+          },
+          decoration: InputDecoration(
+            prefixIcon: _getStatusIcon(_selectedStatus),
+            filled: true,
+            fillColor: AppColors.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+              borderSide: BorderSide(color: AppColors.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+              borderSide: BorderSide(color: AppColors.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+              borderSide: BorderSide(color: AppColors.primary, width: 2),
+            ),
+          ),
+          style: AppTextStyles.inputText,
+          items: Reservation.statusOptions.map<DropdownMenuItem<String>>((String status) {
+            return DropdownMenuItem<String>(
+              value: status,
+              child: Text(
+                Reservation.statusLabels[status] ?? status,
+                style: AppTextStyles.inputText,
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _getStatusIcon(String status) {
+    Color statusColor;
+    IconData statusIcon;
+
+    switch (status) {
+      case 'pending':
+        statusColor = AppColors.warning;
+        statusIcon = Icons.schedule;
+        break;
+      case 'confirmed':
+        statusColor = AppColors.info;
+        statusIcon = Icons.check_circle_outline;
+        break;
+      case 'paid':
+        statusColor = AppColors.success;
+        statusIcon = Icons.payment;
+        break;
+      case 'cancelled':
+        statusColor = AppColors.error;
+        statusIcon = Icons.cancel_outlined;
+        break;
+      default:
+        statusColor = AppColors.textSecondary;
+        statusIcon = Icons.help_outline;
+    }
+
+    return Icon(statusIcon, color: statusColor, size: 16);
+  }
+
   Widget _buildActivityDropdown() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -496,6 +574,9 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
                       SizedBox(height: AppDimensions.spaceL),
 
                       _buildActivityDropdown(),
+                      SizedBox(height: AppDimensions.spaceL),
+
+                      _buildStatusDropdown(),
                     ],
                   ),
                 ),

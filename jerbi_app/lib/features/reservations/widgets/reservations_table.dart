@@ -135,10 +135,19 @@ class ReservationsTable extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Client Name
-                Text(
-                  reservation.nomPrenom,
-                  style: AppTextStyles.h6.copyWith(color: AppColors.textPrimary),
+                // Client Name with Status Icon
+                Row(
+                  children: [
+                    _getStatusIcon(reservation.status),
+                    SizedBox(width: AppDimensions.spaceS),
+                    Expanded(
+                      child: Text(
+                        reservation.nomPrenom,
+                        style: AppTextStyles.h6.copyWith(color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: AppDimensions.spaceXS),
                 // Phone Number
@@ -188,6 +197,39 @@ class ReservationsTable extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _getStatusIcon(String? status) {
+    Color statusColor;
+    IconData statusIcon;
+
+    switch (status) {
+      case 'pending':
+        statusColor = AppColors.warning;
+        statusIcon = Icons.schedule;
+        break;
+      case 'confirmed':
+        statusColor = AppColors.info;
+        statusIcon = Icons.check_circle_outline;
+        break;
+      case 'paid':
+        statusColor = AppColors.success;
+        statusIcon = Icons.payment;
+        break;
+      case 'cancelled':
+        statusColor = AppColors.error;
+        statusIcon = Icons.cancel_outlined;
+        break;
+      default:
+        statusColor = AppColors.warning;
+        statusIcon = Icons.schedule;
+    }
+
+    return Icon(
+      statusIcon,
+      color: statusColor,
+      size: 16,
     );
   }
 
