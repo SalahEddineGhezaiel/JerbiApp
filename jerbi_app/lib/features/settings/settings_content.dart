@@ -339,12 +339,6 @@ class _SettingsContentState extends State<SettingsContent> {
     );
   }
 
-  void _showPermissionsPage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppStrings.permissionsPlaceholder)),
-    );
-  }
-
   void _showExportDialog() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(AppStrings.exportPlaceholder)),
