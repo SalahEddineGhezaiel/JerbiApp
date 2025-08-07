@@ -3,6 +3,7 @@ import '../../shared/constants/constants.dart';
 import '../../shared/widgets/page_header.dart';
 import '../../shared/utils/token_manager.dart';
 import '../../shared/services/admin_service.dart';
+import '../auth/login_page.dart';
 
 class SettingsContent extends StatefulWidget {
   const SettingsContent({super.key});
@@ -387,12 +388,7 @@ class _SettingsContentState extends State<SettingsContent> {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(AppStrings.logoutPlaceholder)),
-                );
-              },
+              onPressed: () => _handleLogout(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error,
                 foregroundColor: AppColors.textOnPrimary,
@@ -406,5 +402,90 @@ class _SettingsContentState extends State<SettingsContent> {
         );
       },
     );
+  }
+
+  /// Handle logout process
+  Future<void> _handleLogout() async {
+    // Close the dialog first
+    Navigator.pop(context);
+
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(color: AppColors.primary),
+                SizedBox(height: AppDimensions.spaceL),
+                Text(
+                  'Déconnexion en cours...',
+                  style: AppTextStyles.bodyMedium,
+                ),
+              ],
+            ),
+          );
+        },
+      );
+
+      // Perform logout
+      await AdminService.logout();
+
+      // Close loading dialog
+      if (mounted) {
+        Navigator.pop(context);
+      }
+
+      // Navigate to login page
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+          (route) => false, // Remove all previous routes
+        );
+      }
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Déconnexion réussie'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog
+      if (mounted) {
+        Navigator.pop(context);
+      }
+
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors de la déconnexion: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+
+      // Even if logout fails, navigate to login (since token is cleared)
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+          (route) => false,
+        );
+      }
+    }
   }
 }
