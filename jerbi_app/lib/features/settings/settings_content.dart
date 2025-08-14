@@ -4,6 +4,7 @@ import '../../shared/widgets/page_header.dart';
 import '../../shared/utils/token_manager.dart';
 import '../../shared/services/admin_service.dart';
 import '../auth/login_page.dart';
+import 'admin_management_page.dart';
 
 class SettingsContent extends StatefulWidget {
   const SettingsContent({super.key});
@@ -332,10 +333,12 @@ class _SettingsContentState extends State<SettingsContent> {
     );
   }
 
-  // Dialog methods (placeholder implementations)
+  // Navigation methods
   void _showUserManagementPage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppStrings.userManagementPlaceholder)),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const AdminManagementPage(),
+      ),
     );
   }
 
