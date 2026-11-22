@@ -35,10 +35,6 @@ class AppConstants {
     'completed'
   ];
   
-  // Default Login Credentials (for demo)
-  static const String defaultUsername = 'admin';
-  static const String defaultPassword = '123456';
-  
   // Animation Durations
   static const Duration shortAnimation = Duration(milliseconds: 200);
   static const Duration mediumAnimation = Duration(milliseconds: 300);

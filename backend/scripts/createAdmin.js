@@ -4,6 +4,12 @@ const Admin = require('../models/Admin');
 
 const createAdmin = async () => {
   try {
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) {
+      console.error('Set ADMIN_PASSWORD (e.g. ADMIN_PASSWORD=... npm run create-admin)');
+      process.exit(1);
+    }
+
     // Connect to MongoDB
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
@@ -19,7 +25,7 @@ const createAdmin = async () => {
     const adminData = {
       username: 'admin',
       email: 'admin@jerbi-events.com',
-      password: '123456', // This will be hashed automatically
+      password: adminPassword, // hashed automatically by the model
       role: 'super-admin',
       permissions: {
         canCreateAdmins: true,
@@ -39,7 +45,6 @@ const createAdmin = async () => {
 
     console.log('✅ Admin user created successfully!');
     console.log('Username: admin');
-    console.log('Password: 123456');
     console.log('Email: admin@jerbi-events.com');
 
   } catch (error) {

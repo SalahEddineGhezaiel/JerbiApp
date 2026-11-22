@@ -3,12 +3,7 @@
 ## Setup Instructions
 
 ### 1. Environment Configuration
-1. Copy `.env` file and update with your MongoDB Atlas credentials:
-   ```
-   MONGODB_URI=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/jerbi-events?retryWrites=true&w=majority
-   JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-   PORT=5000
-   ```
+Copy `.env.example` to `.env` and fill in your MongoDB Atlas credentials and a long random `JWT_SECRET`. Never commit `.env`.
 
 ### 2. Install Dependencies
 ```bash
@@ -17,7 +12,7 @@ npm install
 
 ### 3. Create Admin User
 ```bash
-npm run create-admin
+ADMIN_PASSWORD='choose-a-strong-password' npm run create-admin
 ```
 
 ### 4. Start Server
