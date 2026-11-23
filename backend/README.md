@@ -35,7 +35,7 @@ Login with admin credentials
 ```json
 {
   "username": "admin",
-  "password": "123456"
+  "password": "your-admin-password"
 }
 ```
 
@@ -230,7 +230,7 @@ Check if API is running
 ```json
 {
   "username": "admin",
-  "password": "123456"
+  "password": "your-admin-password"
 }
 ```
 
@@ -260,18 +260,25 @@ backend/
 ├── config/
 │   └── database.js          # MongoDB connection
 ├── controllers/
-│   └── authController.js    # Authentication logic
+│   ├── adminController.js         # Admin management logic
+│   ├── authController.js          # Authentication logic
+│   └── reservationController.js   # Reservation CRUD and statistics
 ├── middleware/
-│   └── auth.js              # JWT middleware
+│   ├── auth.js                    # JWT middleware
+│   └── reservationValidation.js   # Reservation request validation
 ├── models/
-│   └── Admin.js             # Admin user model
+│   ├── Admin.js                   # Admin user model
+│   └── Reservation.js             # Reservation model
 ├── routes/
-│   └── auth.js              # Auth routes
+│   ├── admin.js                   # Admin routes
+│   ├── auth.js                    # Auth routes
+│   └── reservations.js            # Reservation routes
 ├── scripts/
-│   └── createAdmin.js       # Create admin user script
+│   ├── createAdmin.js             # Create the super-admin
+│   └── updateAdmin.js             # Reset the super-admin's permissions
 ├── utils/
 │   └── response.js          # API response utilities
-├── .env                     # Environment variables
+├── .env.example             # Environment variable template (copy to .env)
 ├── .gitignore              # Git ignore rules
 ├── package.json            # Dependencies
 └── server.js               # Main server file
